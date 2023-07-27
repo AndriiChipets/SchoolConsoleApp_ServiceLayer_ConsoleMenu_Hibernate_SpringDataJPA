@@ -1,35 +1,22 @@
 package ua.prom.roboticsdmc.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.Getter;
 
-@Data
-@Builder(setterPrefix = "with")
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class Student extends User {
 
-public class Student {
-
-    private final int studentId;
-    @ToString.Include(name = "\t" + "GroupID")
     private final int groupId;
-    @ToString.Include(name = "\t" + "FirstName")
-    private final String firstName;
-    @ToString.Include(name = "\t" + "LastName")
-    private final String lastName;
 
-    public static class StudentBuilder {
+    @Builder(setterPrefix = "with")
+    public Student(int groupId, int userId, String firstName, String lastName, String email, String password,
+            String repeatPassword) {
+        super(userId, firstName, lastName, email, password, repeatPassword);
+        this.groupId = groupId;
+    }
 
-        public StudentBuilder withFirstName(String firstName) {
-            this.firstName = firstName != null ? firstName.trim() : null;
-            return this;
-        }
-
-        public StudentBuilder withLastName(String lastName) {
-            this.lastName = lastName != null ? lastName.trim() : null;
-            return this;
-        }
+    @Override
+    public String toString() {
+        return "Student [" + super.toString() + ", groupId=" + groupId + "]";
     }
 }

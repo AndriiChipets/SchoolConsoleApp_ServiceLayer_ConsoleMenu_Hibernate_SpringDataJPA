@@ -9,4 +9,3 @@ public interface GroupDao extends CrudDao<Integer, Group> {
     List<Group> findGroupWithLessOrEqualsStudentQuantity(Integer studentsQuantity);
 
 }
-

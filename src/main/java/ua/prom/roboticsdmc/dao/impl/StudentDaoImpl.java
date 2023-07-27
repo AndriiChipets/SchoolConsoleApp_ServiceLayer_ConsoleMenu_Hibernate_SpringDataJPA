@@ -34,7 +34,7 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
     protected RowMapper<Student> createRowMapper() {
         return (rs, rowNum) -> {
             return Student.builder()
-                    .withStudentId(rs.getInt("student_id"))
+                    .withUserId(rs.getInt("student_id"))
                     .withGroupId(rs.getInt("group_id"))
                     .withFirstName(rs.getString("first_name"))
                     .withLastName(rs.getString("last_name"))
@@ -56,7 +56,7 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
                 student.getFirstName(),
                 student.getLastName(),
                 student.getGroupId(),
-                student.getStudentId() };
+                student.getUserId() };
     }
 
     @Override

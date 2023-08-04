@@ -1,37 +1,19 @@
-package ua.prom.roboticsdmc.datagenerator;
+package ua.prom.roboticsdmc.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.stereotype.Service;
+
 import ua.prom.roboticsdmc.domain.Course;
 import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
+import ua.prom.roboticsdmc.service.DataGenerator;
 
+@Service
 public class DataGeneratorImpl implements DataGenerator {
-
-    private List<Course> courses;
-    private List<Student> students;
-    private List<Group> groups;
-
-    public DataGeneratorImpl() {
-        this.courses = createCourse();
-        this.students = createRandomStudent();
-        this.groups = createRandomGroup();
-    }
-
-    public List<Course> getCourses() {
-        return courses;
-    }
-
-    public List<Student> getStudents() {
-        return students;
-    }
-
-    public List<Group> getGroups() {
-        return groups;
-    }
 
     @Override
     public List<Student> createRandomStudent() {

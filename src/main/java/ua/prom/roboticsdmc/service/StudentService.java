@@ -2,17 +2,15 @@ package ua.prom.roboticsdmc.service;
 
 import java.util.List;
 
-import ua.prom.roboticsdmc.domain.Course;
-import ua.prom.roboticsdmc.domain.Group;
-import ua.prom.roboticsdmc.domain.Student;
+import ua.prom.roboticsdmc.dto.CourseDto;
+import ua.prom.roboticsdmc.dto.GroupDto;
+import ua.prom.roboticsdmc.dto.StudentDto;
 
 public interface StudentService {
 
-    List<Group> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity);
+    List<GroupDto> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity);
 
-    List<Student> findAllStudentsRelatedToCourseWithGivenName(String courseName);
-
-    void addNewStudent(Student student);
+    List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName);
 
     void deleteStudentByStudent_Id(Integer studentId);
 
@@ -20,8 +18,10 @@ public interface StudentService {
 
     void removeStudentFromOneOfTheirCourses(Integer studentId, Integer courseId);
 
-    List<Course> findAllStudentsCources();
+    List<CourseDto> findAllStudentsCources();
 
-    List<Course> findAllStudentCoursesByStudentId(Integer studentId);
+    List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId);
+
+    void addStudentToGroup(Integer groupId, Integer studentId);
 
 }

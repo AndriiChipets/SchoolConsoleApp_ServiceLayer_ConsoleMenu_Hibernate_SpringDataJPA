@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import ua.prom.roboticsdmc.domain.Course;
-import ua.prom.roboticsdmc.domain.Group;
-import ua.prom.roboticsdmc.domain.Student;
+import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
+import ua.prom.roboticsdmc.dto.CourseDto;
+import ua.prom.roboticsdmc.dto.GroupDto;
+import ua.prom.roboticsdmc.dto.StudentDto;
 import ua.prom.roboticsdmc.service.StudentService;
+import ua.prom.roboticsdmc.service.UserService;
 import ua.prom.roboticsdmc.view.ViewProvider;
 
 @Service
@@ -16,17 +18,20 @@ public class FrontController {
    private static final String MENU = "\n\t ============ Please, choose what do you want to do ============\n"
             + "1 -> Find all groups with less or equal student quantity \n"
             + "2 -> Find all students related to the course with the given name \n"
-            + "3 -> Add a student to the course \n"
-            + "4 -> Remove the student from one of their courses \n" 
-            + "5 -> CRUD_STUDENT save new student \n"
-            + "6 -> CRUD_STUDENT delete student by the STUDENT_ID \n"
+            + "3 -> Add student to the course \n"
+            + "4 -> Remove student from one of his courses \n" 
+            + "5 -> Register new user \n"
+            + "6 -> Delete user by user_Id \n"
+            + "7 -> Add student to group \n"
             + "0 -> To exit from the program \n";
    private static final String WRONG_CHOICE_MESSAGE = "Please, make right choice from the list or enter \"0\" to exit from the program";
    private final StudentService studentService;
+   private final UserService userService;
    private final ViewProvider viewProvider;
 
-   public FrontController(StudentService studentService, ViewProvider viewProvider) {
+   public FrontController(StudentService studentService, ViewProvider viewProvider, UserService userService) {
        this.studentService = studentService;
+       this.userService = userService;
        this.viewProvider = viewProvider;
    }
 
@@ -41,17 +46,18 @@ public class FrontController {
            case 2 -> findStudentByCourseName();
            case 3 -> addStudentToCourse();
            case 4 -> removeStudentFromCourse();
-           case 5 -> addNewStudent();
-           case 6 -> deleteStudentById();
+           case 5 -> addNewUser();
+           case 6 -> deleteUserById();
+           case 7 -> addStudentToGroup();
            default -> viewProvider.printMessage(WRONG_CHOICE_MESSAGE);
            }
        }
    }
-    
+
     private void findGroupWithStudentsQuantity() {
         viewProvider.printMessage("Enter students quantity: ");
         int studentNumber = viewProvider.readInt();
-        List<Group> groups = studentService.findAllGroupsWithLessOrEqualsStudentCount(studentNumber);
+        List<GroupDto> groups = studentService.findAllGroupsWithLessOrEqualsStudentCount(studentNumber);
         groups.forEach(e -> viewProvider.printMessage(e.toString()));
     }
 
@@ -60,7 +66,7 @@ public class FrontController {
         findAllCourses();
         viewProvider.printMessage("Enter course name: ");
         String courseName = viewProvider.read();
-        List<Student> courseStudents = studentService.findAllStudentsRelatedToCourseWithGivenName(courseName);        
+        List<StudentDto> courseStudents = studentService.findAllStudentsRelatedToCourseWithGivenName(courseName);        
         courseStudents.forEach(e -> viewProvider.printMessage(e.toString()));
     }
 
@@ -75,7 +81,7 @@ public class FrontController {
     }
 
     private void getAllStudentCoursesByStudentID(Integer studentId) {
-        List<Course> courses = studentService.findAllStudentCoursesByStudentId(studentId);
+        List<CourseDto> courses = studentService.findAllStudentCoursesByStudentId(studentId);
         courses.forEach(e -> viewProvider.printMessage(e.toString()));
     }
 
@@ -89,29 +95,46 @@ public class FrontController {
         studentService.removeStudentFromOneOfTheirCourses(studentId, courseId);
     }
 
-    private void addNewStudent() {
+    private void addNewUser() {
+        viewProvider.printMessage("Enter user email: ");
+        String email = viewProvider.read();
+        viewProvider.printMessage("Enter user password: ");
+        String password = viewProvider.read();
+        viewProvider.printMessage("Repeat user password: ");
+        String repeatPassword = viewProvider.read();
+        if (!password.equals(repeatPassword)) {
+            throw new IllegalArgumentException("password and repeat password are not equal");
+        }
         viewProvider.printMessage("Enter student first name: ");
         String firstName = viewProvider.read();
         viewProvider.printMessage("Enter student last name: ");
         String lastName = viewProvider.read();
-        viewProvider.printMessage("Enter group ID: ");
-        int groupId = viewProvider.readInt();
-        Student student = Student.builder()
+        UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.builder()
+                .withEmail(email)
+                .withPassword(password)
+                .withRepeatPassword(repeatPassword)
                 .withFirstName(firstName)
                 .withLastName(lastName)
-                .withGroupId(groupId)
                 .build();
-        studentService.addNewStudent(student);
+        userService.register(userRegistrationRequest);
     }
 
-    private void deleteStudentById() {
+    private void deleteUserById() {
         viewProvider.printMessage("Enter student ID: ");
         int studentId = viewProvider.readInt();
         studentService.deleteStudentByStudent_Id(studentId);
     }
 
     private void findAllCourses() {
-        List<Course> allCourses = studentService.findAllStudentsCources();
+        List<CourseDto> allCourses = studentService.findAllStudentsCources();
         allCourses.forEach(e -> viewProvider.printMessage(e.toString()));
+    }
+    
+    private void addStudentToGroup() {
+        viewProvider.printMessage("Enter student ID: ");
+        int studentId = viewProvider.readInt();
+        viewProvider.printMessage("Enter group ID: ");
+        int groupId = viewProvider.readInt();
+        studentService.addStudentToGroup(groupId, studentId);
     }
 }

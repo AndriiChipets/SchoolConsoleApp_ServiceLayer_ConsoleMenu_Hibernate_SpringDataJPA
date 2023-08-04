@@ -1,6 +1,5 @@
 -- Drop all tables
 DROP TABLE IF EXISTS school_app_schema.users CASCADE;
-DROP TABLE IF EXISTS school_app_schema.students CASCADE;
 DROP TABLE IF EXISTS school_app_schema.groups CASCADE;
 DROP TABLE IF EXISTS school_app_schema.courses CASCADE;
 DROP TABLE IF EXISTS school_app_schema.students_courses CASCADE;
@@ -15,25 +14,12 @@ CREATE TABLE IF NOT EXISTS school_app_schema.users (
     user_id SERIAL PRIMARY KEY,
     group_id int,
     first_name character(30) NOT NULL,
-    last_name character(30) NOT NULL
-    email character(50) UNIQUE
+    last_name character(30) NOT NULL,
+    email character(50) UNIQUE,
     password character(50)
-    repeatPassword character(50)
 );
 --TABLESPACE pg_default;
 ALTER TABLE IF EXISTS school_app_schema.users
-    OWNER to school_app_user;
-
--- TABLE: students
-CREATE TABLE IF NOT EXISTS school_app_schema.students (
-    student_id PRIMARY KEY,
-    group_id int,
-    FOREIGN KEY (student_id) 
-    REFERENCES school_app_schema.users(user_id)
-    ON DELETE CASCADE
-);
---TABLESPACE pg_default;
-ALTER TABLE IF EXISTS school_app_schema.students
     OWNER to school_app_user;
 
 -- TABLE: groups
@@ -57,10 +43,10 @@ ALTER TABLE IF EXISTS school_app_schema.courses
     
 -- TABLE: students_courses - this is a table for implementation MANY TO MANY relationship
 CREATE TABLE IF NOT EXISTS school_app_schema.students_courses (
-    student_id int,
+    user_id int,
     course_id int,
-    FOREIGN KEY (student_id) 
-    REFERENCES school_app_schema.students(student_id)
+    FOREIGN KEY (user_id) 
+    REFERENCES school_app_schema.users(user_id)
     ON DELETE CASCADE,
     FOREIGN KEY (course_id) 
     REFERENCES school_app_schema.courses(course_id)

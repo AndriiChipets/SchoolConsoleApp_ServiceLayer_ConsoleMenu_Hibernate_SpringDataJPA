@@ -11,4 +11,6 @@ public interface CourseDao extends CrudDao<Integer, Course> {
     void addStudentToCourse(Integer studentId, Integer courseId);
 
     void removeStudentFromCourse(Integer studentId, Integer courseId);
+    
+    void fillRandomStudentCourseTable(List<List<Integer>> studentCourses);
 }

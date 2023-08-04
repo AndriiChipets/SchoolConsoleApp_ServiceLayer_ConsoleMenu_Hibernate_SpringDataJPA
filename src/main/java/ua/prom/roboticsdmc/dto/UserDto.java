@@ -1,11 +1,12 @@
-package ua.prom.roboticsdmc.domain;
+package ua.prom.roboticsdmc.dto;
 
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder(setterPrefix = "with")
-public class User {
+
+public class UserDto {
 
     private final int userId;
     private final String firstName;
@@ -13,4 +14,8 @@ public class User {
     private final String email;
     private final String password;
 
+    @Override
+    public String toString() {
+        return "userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email;
+    }
 }

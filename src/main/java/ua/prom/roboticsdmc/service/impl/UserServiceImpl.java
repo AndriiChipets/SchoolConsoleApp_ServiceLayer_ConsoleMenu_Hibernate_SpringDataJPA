@@ -1,30 +1,30 @@
 package ua.prom.roboticsdmc.service.impl;
 
+import org.springframework.stereotype.Service;
+
+import lombok.AllArgsConstructor;
 import ua.prom.roboticsdmc.dao.UserDao;
+import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
 import ua.prom.roboticsdmc.domain.User;
-import ua.prom.roboticsdmc.service.PasswordEncriptor;
 import ua.prom.roboticsdmc.service.UserService;
 import ua.prom.roboticsdmc.service.validator.Validator;
 
+@Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final PasswordEncriptor passwordEncriptor;
-    private final Validator<User> userValidator;
-    private final User user;
-
-    public UserServiceImpl(UserDao userDao, PasswordEncriptor passwordEncriptor, Validator<User> userValidator,
-            User user) {
-        this.userDao = userDao;
-        this.passwordEncriptor = passwordEncriptor;
-        this.userValidator = userValidator;
-        this.user = user;
-    }
+    private final Validator<UserRegistrationRequest> userValidator;
 
     @Override
     public boolean login(String email, String password) {
 
-        userValidator.validate(user);
+        UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.builder()
+                .withEmail(email)
+                .withPassword(password)
+                .build();
+        userValidator.validate(userRegistrationRequest);
         String encriptPassword = passwordEncriptor.encript(password);
         return userDao.findByEmail(email)
                 .map(User::getPassword)
@@ -33,14 +33,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(User user) {
+    public void register(UserRegistrationRequest registrationRequest) {
         
-        userValidator.validate(user);
-        if (userDao.findByEmail(user.getEmail()).isPresent()) {
+        userValidator.validate(registrationRequest);
+        User userWithEncriptPassword = null;
+        if (userDao.findByEmail(registrationRequest.getEmail()).isPresent()) {
             throw new RuntimeException("User is already registred");
         } else {
-            userDao.save(user);
+            String encriptPassword = passwordEncriptor.encript(registrationRequest.getPassword());
+            userWithEncriptPassword = User.builder()
+                    .withEmail(registrationRequest.getEmail())
+                    .withPassword(encriptPassword)
+                    .withFirstName(registrationRequest.getFirstName())
+                    .withLastName(registrationRequest.getLastName())
+                    .build();
+            userDao.save(userWithEncriptPassword);
         }
-        return user;
     }
 }

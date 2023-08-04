@@ -1,5 +1,6 @@
 package ua.prom.roboticsdmc.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,12 +19,14 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
     private static final String FIND_ALL_PEGINATION_QUERY = "SELECT * FROM school_app_schema.courses ORDER BY course_id ASC LIMIT ? OFFSET ?";
     private static final String UPDATE_QUERY = "UPDATE school_app_schema.courses SET course_name=?, course_description=? WHERE course_id=?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.courses WHERE course_id=?";
+    private static final String ADD_STUDENT_TO_COURSE_QUERY = "INSERT INTO school_app_schema.students_courses(user_id, course_id) VALUES (?, ?)";
+    private static final String DELETE_STUDENT_FROM_COURSE_QUERY = "DELETE FROM school_app_schema.students_courses WHERE user_id=? AND course_id = ?";
+    private static final String FILL_RAMDOMLY_STUDENT_COURSE_TABLE_QUERY = "INSERT INTO school_app_schema.students_courses(user_id, course_id) VALUES (?, ?)";
     private static final String GET_ALL_STUDENT_COURSES_BY_STUDENT_ID_QUERY = "SELECT * FROM school_app_schema.courses "
             + "INNER JOIN school_app_schema.students_courses "
             + "ON school_app_schema.courses.course_id = school_app_schema.students_courses.course_id "
-            + "WHERE school_app_schema.students_courses.student_id = ? ";
-    private static final String ADD_STUDENT_TO_COURSE_QUERY = "INSERT INTO school_app_schema.students_courses(student_id, course_id) VALUES (?, ?)";
-    private static final String DELETE_STUDENT_FROM_COURSE_QUERY = "DELETE FROM school_app_schema.students_courses WHERE student_id=? AND course_id = ?";;
+            + "WHERE school_app_schema.students_courses.user_id = ? ";
+
 
     public CourseDaoImpl(JdbcTemplate jdbcTemplate) {
         super(jdbcTemplate, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PEGINATION_QUERY, UPDATE_QUERY,
@@ -69,5 +72,25 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
     @Override
     public void removeStudentFromCourse(Integer studentId, Integer courseId) {
         jdbcTemplate.update(DELETE_STUDENT_FROM_COURSE_QUERY, studentId, courseId);
+    }
+    
+    @Override
+    public void fillRandomStudentCourseTable(List<List<Integer>> studentIdCoursesId) {
+
+        List<Object[]> batch = new ArrayList<>();
+        for (int i = 0; i < studentIdCoursesId.size(); i++) {
+            List<Integer> coursesId = studentIdCoursesId.get(i);
+            for (Integer courseId : coursesId) {
+                Object[] values = getStudentIdCourseIdToSave(i+1, courseId);
+                batch.add(values);
+            }
+        }
+        jdbcTemplate.batchUpdate(FILL_RAMDOMLY_STUDENT_COURSE_TABLE_QUERY, batch);
+    }
+    
+    protected Object[] getStudentIdCourseIdToSave(Integer studentId, Integer courseId) {
+        return new Object[] { 
+                studentId,
+                courseId };
     }
 }

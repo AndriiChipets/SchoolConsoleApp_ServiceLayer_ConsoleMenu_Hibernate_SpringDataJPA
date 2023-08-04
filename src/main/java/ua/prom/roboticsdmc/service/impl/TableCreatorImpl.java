@@ -1,4 +1,4 @@
-package ua.prom.roboticsdmc.tablecreator;
+package ua.prom.roboticsdmc.service.impl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -6,25 +6,27 @@ import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
-import ua.prom.roboticsdmc.dao.ConnectorDB;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
+import ua.prom.roboticsdmc.service.TableCreator;
 
+@Service
 public class TableCreatorImpl implements TableCreator {
 
-    private final ConnectorDB connectorDB;
+    private final JdbcTemplate jdbcTemplate;
 
-    public TableCreatorImpl(ConnectorDB connectorDB) {
-        this.connectorDB = connectorDB;
+    public TableCreatorImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void createTables(String schemaFilePath) {
 
-        try (Connection connection = connectorDB.getConnection(); Statement statement = connection.createStatement()) {
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
 
             ScriptRunner scriptRunner = new ScriptRunner(connection);
             Reader reader = new BufferedReader(new FileReader(schemaFilePath));

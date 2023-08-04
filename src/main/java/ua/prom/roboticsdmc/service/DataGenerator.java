@@ -1,4 +1,4 @@
-package ua.prom.roboticsdmc.datagenerator;
+package ua.prom.roboticsdmc.service;
 
 import java.util.List;
 

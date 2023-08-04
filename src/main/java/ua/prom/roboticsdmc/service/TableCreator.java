@@ -1,4 +1,4 @@
-package ua.prom.roboticsdmc.tablecreator;
+package ua.prom.roboticsdmc.service;
 
 public interface TableCreator {
 

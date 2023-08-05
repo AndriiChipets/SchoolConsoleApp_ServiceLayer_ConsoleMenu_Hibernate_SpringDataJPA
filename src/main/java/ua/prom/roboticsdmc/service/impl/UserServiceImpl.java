@@ -7,6 +7,7 @@ import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
 import ua.prom.roboticsdmc.domain.User;
 import ua.prom.roboticsdmc.service.UserService;
+import ua.prom.roboticsdmc.service.exception.RegisterException;
 import ua.prom.roboticsdmc.service.validator.Validator;
 
 @Service
@@ -15,16 +16,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final PasswordEncriptor passwordEncriptor;
-    private final Validator<UserRegistrationRequest> userValidator;
+    private final Validator<User> userValidator;
 
     @Override
     public boolean login(String email, String password) {
 
-        UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.builder()
+        User userToValidate = User.builder()
                 .withEmail(email)
                 .withPassword(password)
                 .build();
-        userValidator.validate(userRegistrationRequest);
+        userValidator.validate(userToValidate);
         String encriptPassword = passwordEncriptor.encript(password);
         return userDao.findByEmail(email)
                 .map(User::getPassword)
@@ -34,20 +35,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserRegistrationRequest registrationRequest) {
-        
-        userValidator.validate(registrationRequest);
-        User userWithEncriptPassword = null;
+
+        User userToValidate = User.builder()
+                .withEmail(registrationRequest.getEmail())
+                .withPassword(registrationRequest.getPassword())
+                .build();
+        userValidator.validate(userToValidate);
         if (userDao.findByEmail(registrationRequest.getEmail()).isPresent()) {
-            throw new RuntimeException("User is already registred");
-        } else {
-            String encriptPassword = passwordEncriptor.encript(registrationRequest.getPassword());
-            userWithEncriptPassword = User.builder()
-                    .withEmail(registrationRequest.getEmail())
-                    .withPassword(encriptPassword)
-                    .withFirstName(registrationRequest.getFirstName())
-                    .withLastName(registrationRequest.getLastName())
-                    .build();
-            userDao.save(userWithEncriptPassword);
+            throw new RegisterException("User is already registred");
         }
+        String encriptPassword = passwordEncriptor.encript(registrationRequest.getPassword());
+        User userWithEncriptPassword = User.builder()
+                .withEmail(registrationRequest.getEmail())
+                .withPassword(encriptPassword)
+                .withFirstName(registrationRequest.getFirstName())
+                .withLastName(registrationRequest.getLastName())
+                .build();
+        userDao.save(userWithEncriptPassword);
     }
 }

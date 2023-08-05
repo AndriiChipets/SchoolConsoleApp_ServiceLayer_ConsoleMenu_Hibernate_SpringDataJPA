@@ -62,7 +62,7 @@ public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
     }
 
     @Override
-    public List<E> findAll(Integer rawOffset, Integer rawLimit) {
+    public List<E> findAll(int rawOffset, int rawLimit) {
         return jdbcTemplate.query(findAllPeginationQuery, createRowMapper(), rawLimit, rawOffset);
     }
 

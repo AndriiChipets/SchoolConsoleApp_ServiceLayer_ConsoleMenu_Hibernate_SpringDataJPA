@@ -13,7 +13,7 @@ public interface CrudDao<ID, E> {
 
     List<E> findAll();
     
-    List<E> findAll(Integer rowOffset, Integer rowLimit);
+    List<E> findAll(int rowOffset, int rowLimit);
 
     void update(E entity);
 

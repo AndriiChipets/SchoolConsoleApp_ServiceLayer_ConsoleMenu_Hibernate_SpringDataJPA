@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.service.DataGenerator;
 
+@Profile("!test")
 @Component
 @Order(2)
 @AllArgsConstructor

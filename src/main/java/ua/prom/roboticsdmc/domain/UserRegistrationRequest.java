@@ -1,9 +1,11 @@
 package ua.prom.roboticsdmc.domain;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 @Builder(setterPrefix = "with")
 public class UserRegistrationRequest {
     

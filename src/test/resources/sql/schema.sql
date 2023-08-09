@@ -11,12 +11,12 @@ CREATE ROLE school_app_user WITH
 
 -- Drop all tables
 DROP TABLE IF EXISTS school_app_schema.groups CASCADE;
-DROP TABLE IF EXISTS school_app_schema.students CASCADE;
+DROP TABLE IF EXISTS school_app_schema.users CASCADE;
 DROP TABLE IF EXISTS school_app_schema.courses CASCADE;
 DROP TABLE IF EXISTS school_app_schema.students_courses CASCADE;
 
 -- SCHEMA: school_app_schema
-DROP SCHEMA IF EXISTS school_app_schema; 
+DROP SCHEMA IF EXISTS school_app_schema;
 CREATE SCHEMA IF NOT EXISTS school_app_schema
 AUTHORIZATION school_app_user;
 
@@ -25,13 +25,15 @@ CREATE TABLE IF NOT EXISTS school_app_schema.groups (
     group_id SERIAL PRIMARY KEY,
     group_name character(40) UNIQUE
 );
-    
--- TABLE: students
-CREATE TABLE IF NOT EXISTS school_app_schema.students (
-    student_id SERIAL PRIMARY KEY,
+
+-- TABLE: users
+CREATE TABLE IF NOT EXISTS school_app_schema.users (
+    user_id SERIAL PRIMARY KEY,
     group_id int,
     first_name character(30) NOT NULL,
-    last_name character(30) NOT NULL
+    last_name character(30) NOT NULL,
+    email character(50) UNIQUE,
+    password character(50)
 );
     
 --TABLE: courses
@@ -43,10 +45,10 @@ CREATE TABLE IF NOT EXISTS school_app_schema.courses (
     
 -- TABLE: students_courses - this is a table for implementation MANY TO MANY relationship
 CREATE TABLE IF NOT EXISTS school_app_schema.students_courses (
-    student_id int,
+    user_id int,
     course_id int,
-    FOREIGN KEY (student_id) 
-    REFERENCES school_app_schema.students(student_id)
+    FOREIGN KEY (user_id) 
+    REFERENCES school_app_schema.users(user_id)
     ON DELETE CASCADE,
     FOREIGN KEY (course_id) 
     REFERENCES school_app_schema.courses(course_id)

@@ -43,7 +43,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void deleteStudentByStudent_Id(Integer studentId) {
+    public void deleteUserByUser_Id(Integer studentId) {
         studentDao.deleteById(studentId);
     }
 

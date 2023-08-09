@@ -12,7 +12,7 @@ public interface StudentService {
 
     List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName);
 
-    void deleteStudentByStudent_Id(Integer studentId);
+    void deleteUserByUser_Id(Integer studentId);
 
     void addStudentToCourse(Integer studentId, Integer courseId);
 

@@ -1,8 +1,10 @@
 package ua.prom.roboticsdmc.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
+@EqualsAndHashCode(callSuper = true)
 @Getter
 @SuperBuilder(setterPrefix = "with")
 

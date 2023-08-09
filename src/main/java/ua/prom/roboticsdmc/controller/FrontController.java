@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
 import ua.prom.roboticsdmc.dto.CourseDto;
 import ua.prom.roboticsdmc.dto.GroupDto;
@@ -15,7 +14,7 @@ import ua.prom.roboticsdmc.service.UserService;
 import ua.prom.roboticsdmc.view.ViewProvider;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class FrontController {
     
    private static final String MENU = "\n\t ============ Please, choose what do you want to do ============\n"
@@ -28,11 +27,8 @@ public class FrontController {
             + "7 -> Add student to group \n"
             + "0 -> To exit from the program \n";
    private static final String WRONG_CHOICE_MESSAGE = "Please, make right choice from the list or enter \"0\" to exit from the program";
-   @NonNull
    private final StudentService studentService;
-   @NonNull
    private final UserService userService;
-   @NonNull
    private final ViewProvider viewProvider;
 
    public void run() {
@@ -53,7 +49,7 @@ public class FrontController {
            }
        }
    }
-
+ 
     private void findGroupWithStudentsQuantity() {
         viewProvider.printMessage("Enter students quantity: ");
         int studentNumber = viewProvider.readInt();
@@ -105,9 +101,9 @@ public class FrontController {
         if (!password.equals(repeatPassword)) {
             throw new IllegalArgumentException("password and repeat password are not equal");
         }
-        viewProvider.printMessage("Enter student first name: ");
+        viewProvider.printMessage("Enter user first name: ");
         String firstName = viewProvider.read();
-        viewProvider.printMessage("Enter student last name: ");
+        viewProvider.printMessage("Enter user last name: ");
         String lastName = viewProvider.read();
         UserRegistrationRequest userRegistrationRequest = UserRegistrationRequest.builder()
                 .withEmail(email)
@@ -121,8 +117,8 @@ public class FrontController {
 
     private void deleteUserById() {
         viewProvider.printMessage("Enter student ID: ");
-        int studentId = viewProvider.readInt();
-        studentService.deleteStudentByStudent_Id(studentId);
+        int userId = viewProvider.readInt();
+        studentService.deleteUserByUser_Id(userId);
     }
 
     private void findAllCourses() {

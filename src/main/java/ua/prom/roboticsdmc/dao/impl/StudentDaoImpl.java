@@ -17,7 +17,7 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.users WHERE user_id=?";
     private static final String FIND_ALL_QUERY = "SELECT * FROM school_app_schema.users ORDER BY school_app_schema.users.user_id ASC";
     private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.users ORDER BY user_id ASC LIMIT ? OFFSET ?";
-    private static final String UPDATE_QUERY = "UPDATE school_app_schema.users group_id=? WHERE user_id=?";
+    private static final String UPDATE_QUERY = "UPDATE school_app_schema.users SET group_id=?, first_name=?, last_name=?, email=?, password=? WHERE user_id=?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.users WHERE user_id=?";
     private static final String DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY = "UPDATE school_app_schema.users SET group_id=? WHERE user_id=?";
     private static final String FIND_STUDENTS_BY_COURSE_NAME_QUERY = "SELECT * FROM school_app_schema.users " 
@@ -41,8 +41,7 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
                     .withGroupId(rs.getInt("group_id"))
                     .withFirstName(rs.getString("first_name"))
                     .withLastName(rs.getString("last_name"))
-                    .withEmail("email")
-                    .withPassword("password")
+                    .withEmail(rs.getString("email"))
                     .build();
         };
     }
@@ -60,12 +59,12 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
     @Override
     protected Object[] getEntityPropertiesToUpdate(Student student) {
         return new Object[] {
-                student.getUserId(),
                 student.getGroupId(),
                 student.getFirstName(),
                 student.getLastName(),
                 student.getEmail(),
-                student.getPassword() };
+                student.getPassword(),
+                student.getUserId() };
     }
     
     protected Object[] getEntityPropertiesToUpdateGroup(Student student) {

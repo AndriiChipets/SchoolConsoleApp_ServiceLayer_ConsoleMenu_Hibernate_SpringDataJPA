@@ -32,10 +32,8 @@ public class UserDaoImpl extends AbstractCrudDaoImpl<Integer, User> implements U
                     .withUserId(rs.getInt("user_id"))
                     .withFirstName(rs.getString("first_name"))
                     .withLastName(rs.getString("last_name"))
-                    .withEmail("email")
-                    .withPassword("password")
-                    .build();
-        };
+                    .withEmail(rs.getString("email"))
+                    .build(); };
     }
 
     @Override
@@ -50,11 +48,11 @@ public class UserDaoImpl extends AbstractCrudDaoImpl<Integer, User> implements U
     @Override
     protected Object[] getEntityPropertiesToUpdate(User user) {
         return new Object[] {
-                user.getUserId(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
-                user.getPassword()};
+                user.getPassword(),
+                user.getUserId() };
     }
     
     @Override

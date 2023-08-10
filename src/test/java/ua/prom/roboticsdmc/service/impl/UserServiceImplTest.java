@@ -3,16 +3,15 @@ package ua.prom.roboticsdmc.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,7 +24,6 @@ import ua.prom.roboticsdmc.service.validator.Validator;
 
 @SpringBootTest(classes = {UserServiceImpl.class})
 @DisplayName("UserServiceImplTest")
-@ExtendWith(value = { MockitoExtension.class })
 
 class UserServiceImplTest {
 
@@ -132,9 +130,10 @@ class UserServiceImplTest {
                 .withLastName(lastName)
                 .build();
 
+        when(passwordEncriptor.encript(anyString())).thenReturn(encriptPassword);
         when(userDao.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
 
-        assertFalse(userServiceImpl.login(email, password));
+        assertTrue(userServiceImpl.login(email, password));
         
         verify(userDao).findByEmail(email);
     }

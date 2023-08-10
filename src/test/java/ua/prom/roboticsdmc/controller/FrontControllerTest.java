@@ -47,6 +47,8 @@ class FrontControllerTest {
     @DisplayName("run() should invoke findGroupWithStudentsQuantity()")
     void run_shouldInvokeMethodFindGroupWithStudentsQuantity_whenChoiceIs1() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int studentNumber = 15;
         List<GroupDto> groups = new ArrayList<>(Arrays.asList(
                 GroupDto.builder()
@@ -56,6 +58,8 @@ class FrontControllerTest {
                 .withGroupName("BB-02")
                 .build()));
         
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(1).thenReturn(studentNumber).thenReturn(0);
         when(studentService.findAllGroupsWithLessOrEqualsStudentCount(anyInt())).thenReturn(groups);
         frontController.run();
@@ -102,6 +106,8 @@ class FrontControllerTest {
     @DisplayName("run() should invoke addStudentToCourse()")
     void run_shouldInvokeMethodAddStudentToCourse_whenChoiceIs3() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int studentId = 10;
         int courseId = 1;
         List<CourseDto> courses = new ArrayList<>(Arrays.asList(
@@ -114,6 +120,8 @@ class FrontControllerTest {
                 .withCourseName("Physics")
                 .build()));
 
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(3).thenReturn(courseId).thenReturn(studentId).thenReturn(0);
         when(studentService.findAllStudentsCources()).thenReturn(courses);
         frontController.run();
@@ -125,6 +133,8 @@ class FrontControllerTest {
     @DisplayName("run() should invoke removeStudentFromCourse()")
     void run_shouldInvokeMethodRemoveStudentFromCourse_whenChoiceIs4() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int studentId = 10;
         int courseId = 1;
         List<CourseDto> courses = new ArrayList<>(Arrays.asList(
@@ -137,6 +147,8 @@ class FrontControllerTest {
                 .withCourseName("Physics")
                 .build()));
 
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(4).thenReturn(studentId).thenReturn(courseId).thenReturn(0);
         when(studentService.findAllStudentCoursesByStudentId(anyInt())).thenReturn(courses);
         frontController.run();
@@ -160,13 +172,18 @@ class FrontControllerTest {
                 .withFirstName(firstName)
                 .withLastName(lastName)
                 .build();
-        when(viewProvider.readInt()).thenReturn(5).thenReturn(0);
+        
         when(viewProvider.read())
-            .thenReturn(email)
-            .thenReturn(password)
-            .thenReturn(repeatPassword)
-            .thenReturn(firstName)
-            .thenReturn(lastName);
+        .thenReturn(email)
+        .thenReturn(password)
+        .thenReturn(email)
+        .thenReturn(password)
+        .thenReturn(repeatPassword)
+        .thenReturn(firstName)
+        .thenReturn(lastName);;
+        when(userService.login(anyString(), anyString())).thenReturn(true);
+        when(viewProvider.readInt()).thenReturn(5).thenReturn(0);
+
         frontController.run();
 
         verify(userService).register(userRegistrationRequest);
@@ -200,8 +217,12 @@ class FrontControllerTest {
     @DisplayName("run() should invoke deleteUserById()")
     void run_shouldInvokeMethodDeleteUserById_whenChoiceIs9() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int userId = 10;
-
+        
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(6).thenReturn(userId).thenReturn(0);
         frontController.run();
         
@@ -212,9 +233,13 @@ class FrontControllerTest {
     @DisplayName("run() should invoke addStudentToGroup()")
     void run_shouldInvokeMethodAddStudentToGroup_whenChoiceIs9() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int userId = 10;
         int groupId = 1;
 
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(7).thenReturn(userId).thenReturn(groupId).thenReturn(0);
         frontController.run();
 
@@ -225,9 +250,13 @@ class FrontControllerTest {
     @DisplayName("run() should print message when choice is incorrect")
     void run_shouldPrintMessage_whenChoiceIsIncorrect() {
 
+        String email = "test@gmail.com";
+        String password = "12@Ab34";
         int choise = 1000;
         String wrongChoiceMessage = "Please, make right choice from the list or enter \"0\" to exit from the program";
 
+        when(viewProvider.read()).thenReturn(email).thenReturn(password);
+        when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(choise).thenReturn(0);
         frontController.run();
 

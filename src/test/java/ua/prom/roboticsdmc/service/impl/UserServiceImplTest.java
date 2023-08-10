@@ -3,19 +3,16 @@ package ua.prom.roboticsdmc.service.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -28,6 +25,7 @@ import ua.prom.roboticsdmc.service.validator.Validator;
 
 @SpringBootTest(classes = {UserServiceImpl.class})
 @DisplayName("UserServiceImplTest")
+@ExtendWith(value = { MockitoExtension.class })
 
 class UserServiceImplTest {
 
@@ -113,6 +111,29 @@ class UserServiceImplTest {
         
         when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
         
+        assertFalse(userServiceImpl.login(email, password));
+        
+        verify(userDao).findByEmail(email);
+    }
+    
+    @Test
+    @DisplayName("login method should return True when entered Email and Password is present")
+    void login_shouldReturnTrue_whenEnteredEmailAndPasswordIsPresent() {
+
+        String firstName = "Patricia";
+        String lastName = "Jackson";
+        String email = "patricia.jackson@gmail.com";
+        String password = "12aBcd@1";
+        String encriptPassword = "#%DJHG04";
+        User userWithEncriptPassword = User.builder()
+                .withEmail(email)
+                .withPassword(encriptPassword)
+                .withFirstName(firstName)
+                .withLastName(lastName)
+                .build();
+
+        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
+
         assertFalse(userServiceImpl.login(email, password));
         
         verify(userDao).findByEmail(email);

@@ -5,14 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.springframework.stereotype.Service;
-
+import ua.prom.roboticsdmc.anotation.DataGeneration;
 import ua.prom.roboticsdmc.domain.Course;
 import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.service.DataGenerator;
 
-@Service
+@DataGeneration
 public class DataGeneratorImpl implements DataGenerator {
 
     @Override

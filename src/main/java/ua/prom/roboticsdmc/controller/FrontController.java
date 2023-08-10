@@ -32,6 +32,11 @@ public class FrontController {
    private final ViewProvider viewProvider;
 
    public void run() {
+       if (!login()) {
+           viewProvider.printMessage("You are not registred, please register");
+           addNewUser();
+           viewProvider.printMessage("Thank you, you are registred");
+       }
        boolean isWork = true;
        while (isWork) {
            viewProvider.printMessage(MENU);
@@ -49,7 +54,16 @@ public class FrontController {
            }
        }
    }
- 
+
+   private boolean login() {
+       viewProvider.printMessage("To work with program, please login");
+       viewProvider.printMessage("Enter email:");
+       String email = viewProvider.read();
+       viewProvider.printMessage("Enter password:");
+       String password = viewProvider.read();
+       return userService.login(email, password);
+   }
+
     private void findGroupWithStudentsQuantity() {
         viewProvider.printMessage("Enter students quantity: ");
         int studentNumber = viewProvider.readInt();

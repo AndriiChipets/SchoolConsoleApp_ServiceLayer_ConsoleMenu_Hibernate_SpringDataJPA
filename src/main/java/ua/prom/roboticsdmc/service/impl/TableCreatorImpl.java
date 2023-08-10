@@ -9,12 +9,12 @@ import java.sql.SQLException;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Service;
 
+import ua.prom.roboticsdmc.anotation.DataGeneration;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.service.TableCreator;
 
-@Service
+@DataGeneration
 public class TableCreatorImpl implements TableCreator {
 
     private final JdbcTemplate jdbcTemplate;

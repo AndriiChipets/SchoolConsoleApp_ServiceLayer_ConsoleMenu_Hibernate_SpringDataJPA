@@ -15,12 +15,12 @@ import ua.prom.roboticsdmc.service.TableCreator;
 @AllArgsConstructor
 public class ApplicationRunnerTableCreator implements ApplicationRunner {
 
+    private static final String SCHEMA_FILE_PATH = "src/main/resources/sgl/schema.sql";
     private final TableCreator tableCreator;
-    private final String schemaFilePath = "src/main/resources/sgl/schema.sql";
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        tableCreator.createTables(schemaFilePath);
+        tableCreator.createTables(SCHEMA_FILE_PATH);
     }
 }

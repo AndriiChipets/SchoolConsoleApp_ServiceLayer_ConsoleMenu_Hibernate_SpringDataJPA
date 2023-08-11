@@ -1,6 +1,7 @@
 package ua.prom.roboticsdmc.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -12,6 +13,19 @@ import ua.prom.roboticsdmc.service.DataGenerator;
 @ua.prom.roboticsdmc.anotation.DataGenerator
 public class DataGeneratorImpl implements DataGenerator {
     
+    private static final List<String> FIRST_NAMES = new ArrayList<>(Arrays.asList(
+            "James", "Robert", "John", "Michael", "David", "William", "Richard", "Joseph", "Thomas", "Christopher",
+            "Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen"));
+    private static final List<String> LAST_NAMES = new ArrayList<>(Arrays.asList(
+            "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
+            "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"));
+    private static final char[] EN_ALPHABET = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+            'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
+    private static final char[] NUMBERS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+    private static final List<String> COURSE_NAMES = new ArrayList<>(Arrays.asList(
+            "Math", "Biology", "Philosophy", "Literature", "Science of law", "Physics", "Chemistry", "Ukrainian",
+            "English", "Astronomy"));
+
     @Override
     public List<Student> createRandomStudent(int studentsNumber) {
 
@@ -20,8 +34,8 @@ public class DataGeneratorImpl implements DataGenerator {
 
         for (int i = 0; i < studentsNumber; i++) {
             Student student = Student.builder()
-                    .withFirstName(ConstantUtility.FIRST_NAMES.get(random.nextInt(ConstantUtility.FIRST_NAMES.size())))
-                    .withLastName(ConstantUtility.LAST_NAMES.get(random.nextInt(ConstantUtility.LAST_NAMES.size())))
+                    .withFirstName(FIRST_NAMES.get(random.nextInt(FIRST_NAMES.size())))
+                    .withLastName(LAST_NAMES.get(random.nextInt(LAST_NAMES.size())))
                     .build();
             studentNames.add(student);
         }
@@ -38,8 +52,8 @@ public class DataGeneratorImpl implements DataGenerator {
             StringBuilder lettersBldr = new StringBuilder();
             StringBuilder numbersBldr = new StringBuilder();
             for (int j = 0; j < 2; j++) {
-                lettersBldr.append(ConstantUtility.EN_ALPHABET[random.nextInt(ConstantUtility.EN_ALPHABET.length)]);
-                numbersBldr.append(ConstantUtility.NUMBERS[random.nextInt(ConstantUtility.NUMBERS.length)]);
+                lettersBldr.append(EN_ALPHABET[random.nextInt(EN_ALPHABET.length)]);
+                numbersBldr.append(NUMBERS[random.nextInt(NUMBERS.length)]);
             }
             newGroups.add(Group.builder().withGroupName(String.format("%s-%s", lettersBldr, numbersBldr)).build());
         }
@@ -51,8 +65,8 @@ public class DataGeneratorImpl implements DataGenerator {
 
         List<Course> newCourses = new ArrayList<>();
 
-        for (int i = 0; i < ConstantUtility.COURSE_NAMES.size(); i++) {
-            Course course = Course.builder().withCourseName(ConstantUtility.COURSE_NAMES.get(i)).build();
+        for (int i = 0; i < COURSE_NAMES.size(); i++) {
+            Course course = Course.builder().withCourseName(COURSE_NAMES.get(i)).build();
             newCourses.add(course);
         }
         return newCourses;

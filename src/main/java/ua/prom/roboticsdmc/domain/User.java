@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 public class User {
 
-    private final int userId;
+    private final Integer userId;
     private final String firstName;
     private final String lastName;
     private final String email;

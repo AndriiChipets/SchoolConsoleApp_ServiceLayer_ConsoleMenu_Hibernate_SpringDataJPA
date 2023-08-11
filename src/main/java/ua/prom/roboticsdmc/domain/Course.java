@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Course {
 
-    private final int courseId;
+    private final Integer courseId;
     private final String courseName;
     private final String courseDescription;
 

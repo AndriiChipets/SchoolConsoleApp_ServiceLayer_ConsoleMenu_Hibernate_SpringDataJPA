@@ -4,11 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +24,6 @@ import ua.prom.roboticsdmc.service.validator.Validator;
 
 @SpringBootTest(classes = {UserServiceImpl.class})
 @DisplayName("UserServiceImplTest")
-
 class UserServiceImplTest {
 
     @MockBean
@@ -114,6 +109,30 @@ class UserServiceImplTest {
         when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
         
         assertFalse(userServiceImpl.login(email, password));
+        
+        verify(userDao).findByEmail(email);
+    }
+    
+    @Test
+    @DisplayName("login method should return True when entered Email and Password is present")
+    void login_shouldReturnTrue_whenEnteredEmailAndPasswordIsPresent() {
+
+        String firstName = "Patricia";
+        String lastName = "Jackson";
+        String email = "patricia.jackson@gmail.com";
+        String password = "12aBcd@1";
+        String encriptPassword = "#%DJHG04";
+        User userWithEncriptPassword = User.builder()
+                .withEmail(email)
+                .withPassword(encriptPassword)
+                .withFirstName(firstName)
+                .withLastName(lastName)
+                .build();
+
+        when(passwordEncriptor.encript(anyString())).thenReturn(encriptPassword);
+        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
+
+        assertTrue(userServiceImpl.login(email, password));
         
         verify(userDao).findByEmail(email);
     }

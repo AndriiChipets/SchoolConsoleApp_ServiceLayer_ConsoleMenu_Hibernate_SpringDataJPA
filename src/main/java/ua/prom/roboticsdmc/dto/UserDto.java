@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode
 @Getter
 @SuperBuilder(setterPrefix = "with")
-
 public class UserDto {
 
     private final int userId;

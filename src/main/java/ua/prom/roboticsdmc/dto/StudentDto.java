@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @Getter
 @SuperBuilder(setterPrefix = "with")
-
 public class StudentDto extends UserDto {
 
     private final int groupId;

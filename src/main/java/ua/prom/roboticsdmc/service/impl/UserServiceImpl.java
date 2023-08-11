@@ -10,7 +10,6 @@ import ua.prom.roboticsdmc.service.UserService;
 import ua.prom.roboticsdmc.service.exception.RegisterException;
 import ua.prom.roboticsdmc.service.validator.Validator;
 
-
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {

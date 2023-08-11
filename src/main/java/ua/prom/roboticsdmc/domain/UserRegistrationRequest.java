@@ -8,7 +8,7 @@ import lombok.Getter;
 @EqualsAndHashCode
 @Builder(setterPrefix = "with")
 public class UserRegistrationRequest {
-    
+
     private final String email;
     private final String password;
     private final String repeatPassword;

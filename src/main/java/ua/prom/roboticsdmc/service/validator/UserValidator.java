@@ -3,11 +3,9 @@ package ua.prom.roboticsdmc.service.validator;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.springframework.stereotype.Service;
-
 import ua.prom.roboticsdmc.domain.User;
 
-@Service
+@ua.prom.roboticsdmc.anotation.Validator
 public class UserValidator implements Validator<User> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&*+/=?`{}~^.-]+@[a-zA-Z0-9.-]+$");
     private static final Pattern PASSWORD_PATTERN = Pattern

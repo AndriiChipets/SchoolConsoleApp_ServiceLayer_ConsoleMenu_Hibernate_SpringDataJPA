@@ -9,7 +9,6 @@ import lombok.ToString;
 @Data
 @Builder(setterPrefix = "with")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-
 public class GroupDto {
 
     private final int groupId;

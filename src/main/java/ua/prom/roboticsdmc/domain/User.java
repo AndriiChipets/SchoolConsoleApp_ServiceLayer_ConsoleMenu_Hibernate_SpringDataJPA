@@ -2,76 +2,43 @@ package ua.prom.roboticsdmc.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 @EqualsAndHashCode
 @Getter
+@SuperBuilder(setterPrefix = "with")
 public class User {
 
-    private final int userId;
+    private final Integer userId;
     private final String firstName;
     private final String lastName;
     private final String email;
     private final String password;
 
-    public User(Builder builder) {
-        this.userId = builder.userId;
-        this.firstName = trimString(builder.firstName);
-        this.lastName = trimString(builder.lastName);
-        this.email = trimString(builder.email);
-        this.password = trimString(builder.password);
-    }
+    public abstract static class UserBuilder<C extends User, B extends UserBuilder<C, B>> {
 
-    private final String trimString(String property) {
-        return property != null ? property.trim() : null;
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
-    @Override
-    public String toString() {
-        return "userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email;
-    }
-
-    public static class Builder<S extends Builder> {
-
-        private int userId;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private String password;
-
-        protected Builder() {
+        public B withFirstName(String firstName) {
+            this.firstName = trimString(firstName);
+            return (B) this;
         }
 
-        public S withUserId(int userId) {
-            this.userId = userId;
-            return (S) this;
+        public B withLastName(String lastName) {
+            this.lastName = trimString(lastName);
+            return (B) this;
         }
 
-        public S withFirstName(String firstName) {
-            this.firstName = firstName;
-            return (S) this;
+        public B withEmail(String email) {
+            this.email = trimString(email);
+            return (B) this;
         }
 
-        public S withLastName(String lastName) {
-            this.lastName = lastName;
-            return (S) this;
+        public B withPassword(String password) {
+            this.password = trimString(password);
+            return (B) this;
         }
 
-        public S withEmail(String email) {
-            this.email = email;
-            return (S) this;
-        }
-
-        public S withPassword(String password) {
-            this.password = password;
-            return (S) this;
-        }
-
-        public User build() {
-            return new User(this);
+        private final String trimString(String property) {
+            return property != null ? property.trim() : null;
         }
     }
 }

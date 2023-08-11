@@ -40,7 +40,6 @@ import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
 @DisplayName("GroupDaoImplTest")
-
 class GroupDaoImplTest {
     
     @ClassRule

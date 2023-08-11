@@ -8,10 +8,9 @@ import lombok.Data;
 @Data
 @Builder(setterPrefix = "with")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-
 public class Group {
 
-    private final int groupId;
+    private final Integer groupId;
     private final String groupName;
 
     public static class GroupBuilder {

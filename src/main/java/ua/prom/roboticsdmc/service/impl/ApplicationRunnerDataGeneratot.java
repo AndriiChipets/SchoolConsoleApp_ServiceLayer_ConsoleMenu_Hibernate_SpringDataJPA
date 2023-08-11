@@ -32,19 +32,19 @@ public class ApplicationRunnerDataGeneratot implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        List<Student> students = dataGenerator.createRandomStudent();
+        List<Student> students = dataGenerator.createRandomStudent(200);
         List<Course> courses = dataGenerator.createCourse();
-        List<Group> groups = dataGenerator.createRandomGroup();
+        List<Group> groups = dataGenerator.createRandomGroup(10);
         studentDao.saveAll(students);
         courseDao.saveAll(courses);
         groupDao.saveAll(groups);
         groups = new ArrayList<>(groupDao.findAll());
         students = new ArrayList<>(studentDao.findAll());
-        students = dataGenerator.assignStudentToGroup(groups, students);
+        students = dataGenerator.assignStudentToGroup(groups, students, 10, 30);
         studentDao.distributeStudentsToGroups(students);
         students = studentDao.findAll();
         courses = courseDao.findAll();
-        List<List<Integer>> studentsAssignedToCourses = dataGenerator.assignStudentToCourses(students, courses);
+        List<List<Integer>> studentsAssignedToCourses = dataGenerator.assignStudentToCourses(students, courses, 1, 3);
         courseDao.fillRandomStudentCourseTable(studentsAssignedToCourses);
     }
 }

@@ -28,7 +28,6 @@ import ua.prom.roboticsdmc.view.ViewProvider;
 
 @SpringBootTest(classes = {FrontController.class})
 @DisplayName("FrontControllerTest")
-
 class FrontControllerTest {
 
     @MockBean

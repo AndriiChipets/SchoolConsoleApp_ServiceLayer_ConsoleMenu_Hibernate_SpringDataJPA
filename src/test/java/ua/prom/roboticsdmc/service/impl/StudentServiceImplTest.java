@@ -32,7 +32,6 @@ import ua.prom.roboticsdmc.mapper.StudentMapper;
 
 @SpringBootTest(classes = {StudentServiceImpl.class})
 @DisplayName("StudentServiceImplTest")
-
 class StudentServiceImplTest {
 
     @MockBean

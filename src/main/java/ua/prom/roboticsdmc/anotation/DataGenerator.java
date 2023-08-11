@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-
-public @interface Validation {
+public @interface DataGenerator {
     String value() default "";
 }

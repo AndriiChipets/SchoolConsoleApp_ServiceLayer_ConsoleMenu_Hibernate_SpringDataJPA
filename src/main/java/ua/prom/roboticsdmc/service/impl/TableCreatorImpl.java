@@ -10,18 +10,16 @@ import java.sql.SQLException;
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import ua.prom.roboticsdmc.anotation.DataGeneration;
+import lombok.AllArgsConstructor;
+import ua.prom.roboticsdmc.anotation.DataGenerator;
 import ua.prom.roboticsdmc.dao.exception.DataBaseSqlRuntimeException;
 import ua.prom.roboticsdmc.service.TableCreator;
 
-@DataGeneration
+@DataGenerator
+@AllArgsConstructor
 public class TableCreatorImpl implements TableCreator {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public TableCreatorImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void createTables(String schemaFilePath) {
@@ -29,8 +27,9 @@ public class TableCreatorImpl implements TableCreator {
         try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
 
             ScriptRunner scriptRunner = new ScriptRunner(connection);
-            Reader reader = new BufferedReader(new FileReader(schemaFilePath));
-            scriptRunner.runScript(reader);
+            try (Reader reader = new BufferedReader(new FileReader(schemaFilePath))) {
+                scriptRunner.runScript(reader);
+            }
 
         } catch (SQLException | IOException e) {
             throw new DataBaseSqlRuntimeException("Schema and tables are not created..", e);

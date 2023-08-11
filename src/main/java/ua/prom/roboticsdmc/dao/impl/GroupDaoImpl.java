@@ -18,7 +18,8 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
     private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.groups ORDER BY group_id ASC LIMIT ? OFFSET ?";
     private static final String UPDATE_QUERY = "UPDATE school_app_schema.groups SET group_name=? WHERE group_id=?";
     private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.groups WHERE group_id=?";
-    private static final String FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY = "SELECT school_app_schema.users.group_id, school_app_schema.groups.group_name, COUNT (school_app_schema.users.user_id) "
+    private static final String FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY = 
+            "SELECT school_app_schema.users.group_id, school_app_schema.groups.group_name, COUNT (school_app_schema.users.user_id) "
             + "FROM school_app_schema.users " 
             + "INNER JOIN school_app_schema.groups "
             + "ON school_app_schema.users.group_id = school_app_schema.groups.group_id "

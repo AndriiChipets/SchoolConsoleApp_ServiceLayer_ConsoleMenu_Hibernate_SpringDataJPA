@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import ua.prom.roboticsdmc.dao.CrudDao;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-
 public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
 
     protected JdbcTemplate jdbcTemplate;

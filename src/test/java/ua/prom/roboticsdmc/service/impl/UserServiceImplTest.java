@@ -24,7 +24,6 @@ import ua.prom.roboticsdmc.service.validator.Validator;
 
 @SpringBootTest(classes = {UserServiceImpl.class})
 @DisplayName("UserServiceImplTest")
-
 class UserServiceImplTest {
 
     @MockBean

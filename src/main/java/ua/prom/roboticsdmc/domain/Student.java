@@ -9,9 +9,10 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(setterPrefix = "with")
 public class Student extends User {
 
-    private final int groupId;
+    private final Integer groupId;
 
-    public static abstract class ChildBuilder<C extends Student, B extends StudentBuilder<C, B>> extends UserBuilder<C, B> {
+    public abstract static class ChildBuilder<C extends Student, B extends StudentBuilder<C, B>>
+            extends UserBuilder<C, B> {
 
     }
 }

@@ -10,9 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 @Component
-
-public @interface DataGeneration {
+@Documented
+public @interface Validator {
     String value() default "";
 }

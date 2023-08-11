@@ -9,7 +9,6 @@ import lombok.ToString;
 @Data
 @Builder(setterPrefix = "with")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-
 public class CourseDto {
 
     private final int courseId;

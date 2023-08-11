@@ -20,7 +20,6 @@ import ua.prom.roboticsdmc.domain.User;
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DisplayName("UserValidatorTest")
-
 class UserValidatorTest {
     
     @Autowired

@@ -2,6 +2,7 @@ package ua.prom.roboticsdmc.service.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -14,9 +15,9 @@ import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.dto.CourseDto;
 import ua.prom.roboticsdmc.dto.GroupDto;
 import ua.prom.roboticsdmc.dto.StudentDto;
-import ua.prom.roboticsdmc.mapper.CourseMapper;
-import ua.prom.roboticsdmc.mapper.GroupMapper;
-import ua.prom.roboticsdmc.mapper.StudentMapper;
+import ua.prom.roboticsdmc.mapper.CourseMapperStruct;
+import ua.prom.roboticsdmc.mapper.GroupMapperStruct;
+import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
 import ua.prom.roboticsdmc.service.StudentService;
 
 @Service
@@ -24,22 +25,26 @@ import ua.prom.roboticsdmc.service.StudentService;
 public class StudentServiceImpl implements StudentService {
 
     private final StudentDao studentDao;
-    private final StudentMapper studentMapper;
     private final GroupDao groupDao;
-    private final GroupMapper groupMapper;
     private final CourseDao courseDao;
-    private final CourseMapper courseMapper;
+    
+    @Autowired
+    GroupMapperStruct gropMapperStruct = GroupMapperStruct.INSTANCE;
+    @Autowired
+    StudentMapperStruct studentMapperStruct = StudentMapperStruct.INSTANCE;
+    @Autowired
+    CourseMapperStruct courseMapperStruct = CourseMapperStruct.INSTANCE;
 
     @Override
     public List<GroupDto> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity) {
         List<Group> groups = groupDao.findGroupWithLessOrEqualsStudentQuantity(studentQuantity);
-        return groups.stream().map(groupMapper::mapEntityToDomain).toList();
+        return groups.stream().map(gropMapperStruct::mapEntityToDomain).toList();
     }
 
     @Override
     public List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName) {
         List<Student> students = studentDao.findStudentsByCourseName(courseName);
-        return students.stream().map(studentMapper::mapEntityToDomain).toList();
+        return students.stream().map(studentMapperStruct::mapEntityToDomain).toList();
     }
 
     @Override
@@ -60,13 +65,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<CourseDto> findAllStudentsCources() {
         List<Course> courses = courseDao.findAll();
-        return courses.stream().map(courseMapper::mapEntityToDomain).toList();
+        return courses.stream().map(courseMapperStruct::mapEntityToDomain).toList();
     }
 
     @Override
     public List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId) {
         List<Course> courses = courseDao.getAllStudentCoursesByStudentID(studentId);
-        return courses.stream().map(courseMapper::mapEntityToDomain).toList();
+        return courses.stream().map(courseMapperStruct::mapEntityToDomain).toList();
     }
 
     @Override

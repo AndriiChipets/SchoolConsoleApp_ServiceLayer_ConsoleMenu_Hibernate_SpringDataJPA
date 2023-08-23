@@ -11,8 +11,8 @@ public interface StudentMapperStruct {
 
     StudentMapperStruct INSTANCE = Mappers.getMapper(StudentMapperStruct.class);
 
-    StudentDto mapEntityToDomain(Student student);
+    StudentDto mapStudentToStudentDto(Student student);
 
-    Student mapDomainToEntity(StudentDto studentDto);
+    Student mapStudentDtoToStudent(StudentDto studentDto);
 
 }

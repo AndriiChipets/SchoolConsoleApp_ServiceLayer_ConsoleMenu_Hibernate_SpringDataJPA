@@ -8,4 +8,6 @@ public interface UserDao extends CrudDao<Integer, User> {
 
     Optional<User> findByEmail(String email);
 
+    boolean isAnyTableInDbSchema();
+
 }

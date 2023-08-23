@@ -11,8 +11,8 @@ public interface CourseMapperStruct {
 
     CourseMapperStruct INSTANCE = Mappers.getMapper(CourseMapperStruct.class);
 
-    CourseDto mapEntityToDomain(Course course);
+    CourseDto mapCourseToCourseDto(Course course);
 
-    Course mapDomainToEntity(CourseDto courseDto);
+    Course mapCourseDtoToCourse(CourseDto courseDto);
 
 }

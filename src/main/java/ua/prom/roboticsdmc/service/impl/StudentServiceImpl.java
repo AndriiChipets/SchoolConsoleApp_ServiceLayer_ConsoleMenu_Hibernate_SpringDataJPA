@@ -38,13 +38,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<GroupDto> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity) {
         List<Group> groups = groupDao.findGroupWithLessOrEqualsStudentQuantity(studentQuantity);
-        return groups.stream().map(gropMapperStruct::mapEntityToDomain).toList();
+        return groups.stream().map(gropMapperStruct::mapGroupToGroupDto).toList();
     }
 
     @Override
     public List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName) {
         List<Student> students = studentDao.findStudentsByCourseName(courseName);
-        return students.stream().map(studentMapperStruct::mapEntityToDomain).toList();
+        return students.stream().map(studentMapperStruct::mapStudentToStudentDto).toList();
     }
 
     @Override
@@ -65,13 +65,13 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<CourseDto> findAllStudentsCources() {
         List<Course> courses = courseDao.findAll();
-        return courses.stream().map(courseMapperStruct::mapEntityToDomain).toList();
+        return courses.stream().map(courseMapperStruct::mapCourseToCourseDto).toList();
     }
 
     @Override
     public List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId) {
         List<Course> courses = courseDao.getAllStudentCoursesByStudentID(studentId);
-        return courses.stream().map(courseMapperStruct::mapEntityToDomain).toList();
+        return courses.stream().map(courseMapperStruct::mapCourseToCourseDto).toList();
     }
 
     @Override

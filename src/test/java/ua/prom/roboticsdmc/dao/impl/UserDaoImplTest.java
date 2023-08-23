@@ -1,5 +1,6 @@
 package ua.prom.roboticsdmc.dao.impl;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -90,11 +91,13 @@ class UserDaoImplTest {
                 .withFirstName("Christopher")
                 .withLastName("Thomas")
                 .withEmail("christopher.thomas@gmail.com")
+                .withPassword("christopher1234")
                 .build(),
                 User.builder()
                 .withFirstName("Patricia")
                 .withLastName("Wilson")
                 .withEmail("patricia.wilson@gmail.com")
+                .withPassword("patricia1234")
                 .build()));
         List<User> expectedUsers = new ArrayList<User>(Arrays.asList(
                 User.builder()
@@ -102,66 +105,77 @@ class UserDaoImplTest {
                 .withFirstName("Michael")
                 .withLastName("Thomas")
                 .withEmail("michael.thomas@gmail.com")
+                .withPassword("michael1234")
                 .build(),
                 User.builder()
                 .withUserId(2)
                 .withFirstName("Christopher")
                 .withLastName("Garcia")
                 .withEmail("christopher.garcia@gmail.com")
+                .withPassword("christopher1234")
                 .build(),
                 User.builder()
                 .withUserId(3)
                 .withFirstName("Patricia")
                 .withLastName("Garcia")
                 .withEmail("patricia.garcia@gmail.com")
+                .withPassword("patricia1234")
                 .build(),
                 User.builder()
                 .withUserId(4)
                 .withFirstName("Patricia")
                 .withLastName("Jackson")
                 .withEmail("patricia.jackson@gmail.com")
+                .withPassword("patricia2345")
                 .build(),
                 User.builder()
                 .withUserId(5)
                 .withFirstName("William")
                 .withLastName("Wilson")
                 .withEmail("william.wilson@gmail.com")
+                .withPassword("william1234")
                 .build(),
                 User.builder()
                 .withUserId(6)
                 .withFirstName("James")
                 .withLastName("Williams")
                 .withEmail("james.williams@gmail.com")
+                .withPassword("james1234")
                 .build(),
                 User.builder()
                 .withUserId(7)
                 .withFirstName("Robert")
                 .withLastName("Rodriguez")
                 .withEmail("robert.rodriguez@gmail.com")
+                .withPassword("robert1234")
                 .build(),
                 User.builder()
                 .withUserId(8)
                 .withFirstName("John")
                 .withLastName("Martinez")
                 .withEmail("john.martinez@gmail.com")
+                .withPassword("john1234")
                 .build(),
                 User.builder()
                 .withUserId(9)
                 .withFirstName("Karen")
                 .withLastName("Garcia")
                 .withEmail("karen.garcia@gmail.com")
+                .withPassword("karen1234")
                 .build(),
                 User.builder()
                 .withUserId(10)
                 .withFirstName("Christopher")
                 .withLastName("Thomas")
                 .withEmail("christopher.thomas@gmail.com")
+                .withPassword("christopher1234")
                 .build(),
                 User.builder()
                 .withUserId(11)
                 .withFirstName("Patricia")
                 .withLastName("Wilson")
                 .withEmail("patricia.wilson@gmail.com")
+                .withPassword("patricia1234")
                 .build()));
 
         userDao.saveAll(addedUsers);
@@ -179,6 +193,7 @@ class UserDaoImplTest {
                 .withFirstName("Michael")
                 .withLastName("Thomas")
                 .withEmail("michael.thomas@gmail.com")
+                .withPassword("michael1234")
                 .build());
 
         assertEquals(expectedUser, userDao.findById(userId));
@@ -203,54 +218,63 @@ class UserDaoImplTest {
                 .withFirstName("Michael")
                 .withLastName("Thomas")
                 .withEmail("michael.thomas@gmail.com")
+                .withPassword("michael1234")
                 .build(),
                 User.builder()
                 .withUserId(2)
                 .withFirstName("Christopher")
                 .withLastName("Garcia")
                 .withEmail("christopher.garcia@gmail.com")
+                .withPassword("christopher1234")
                 .build(),
                 User.builder()
                 .withUserId(3)
                 .withFirstName("Patricia")
                 .withLastName("Garcia")
                 .withEmail("patricia.garcia@gmail.com")
+                .withPassword("patricia1234")
                 .build(),
                 User.builder()
                 .withUserId(4)
                 .withFirstName("Patricia")
                 .withLastName("Jackson")
                 .withEmail("patricia.jackson@gmail.com")
+                .withPassword("patricia2345")
                 .build(),
                 User.builder()
                 .withUserId(5)
                 .withFirstName("William")
                 .withLastName("Wilson")
                 .withEmail("william.wilson@gmail.com")
+                .withPassword("william1234")
                 .build(),
                 User.builder()
                 .withUserId(6)
                 .withFirstName("James")
                 .withLastName("Williams")
                 .withEmail("james.williams@gmail.com")
+                .withPassword("james1234")
                 .build(),
                 User.builder()
                 .withUserId(7)
                 .withFirstName("Robert")
                 .withLastName("Rodriguez")
                 .withEmail("robert.rodriguez@gmail.com")
+                .withPassword("robert1234")
                 .build(),
                 User.builder()
                 .withUserId(8)
                 .withFirstName("John")
                 .withLastName("Martinez")
                 .withEmail("john.martinez@gmail.com")
+                .withPassword("john1234")
                 .build(),
                 User.builder()
                 .withUserId(9)
                 .withFirstName("Karen")
                 .withLastName("Garcia")
                 .withEmail("karen.garcia@gmail.com")
+                .withPassword("karen1234")
                 .build()));
 
         assertEquals(expectedUsers, userDao.findAll());
@@ -268,12 +292,14 @@ class UserDaoImplTest {
                 .withFirstName("Patricia")
                 .withLastName("Garcia")
                 .withEmail("patricia.garcia@gmail.com")
+                .withPassword("patricia1234")
                 .build(),
                 User.builder()
                 .withUserId(4)
                 .withFirstName("Patricia")
                 .withLastName("Jackson")
                 .withEmail("patricia.jackson@gmail.com")
+                .withPassword("patricia2345")
                 .build()));
 
         assertEquals(expectedUsers, userDao.findAll(rowOffset, rowLimit));
@@ -333,5 +359,12 @@ class UserDaoImplTest {
         String email = "notexisting.email@gmail.com";
 
         assertEquals(Optional.empty(), userDao.findByEmail(email));
+    }
+    
+    @Test
+    @DisplayName("isAnyTableInDbSchema method should return True when there is table in data base schema")
+    void isAnyTableInDbSchema_shouldReturnTrue_whenThereIsTableInDataBaseSchema() {
+
+        assertFalse(userDao.isAnyTableInDbSchema());
     }
 }

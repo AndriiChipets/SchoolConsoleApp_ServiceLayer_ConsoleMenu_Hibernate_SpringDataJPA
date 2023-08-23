@@ -72,7 +72,7 @@ class StudentServiceImplTest {
         List<GroupDto> expectedGroupDto = new ArrayList<>(Arrays.asList(groupDto1, groupDto2, groupDto3));
 
         when(groupDao.findGroupWithLessOrEqualsStudentQuantity(anyInt())).thenReturn(groups);
-        when(groupMapperStruct.mapEntityToDomain(any(Group.class)))
+        when(groupMapperStruct.mapGroupToGroupDto(any(Group.class)))
         .thenReturn(groupDto1)
         .thenReturn(groupDto2)
         .thenReturn(groupDto3);
@@ -124,7 +124,7 @@ class StudentServiceImplTest {
         List<StudentDto> expectedStudentDto = new ArrayList<>(Arrays.asList(studentDto1, studentDto2));
 
         when(studentDao.findStudentsByCourseName(anyString())).thenReturn(students);
-        when(studentMapperStruct.mapEntityToDomain(any(Student.class)))
+        when(studentMapperStruct.mapStudentToStudentDto(any(Student.class)))
         .thenReturn(studentDto1)
         .thenReturn(studentDto2);
 
@@ -195,7 +195,7 @@ class StudentServiceImplTest {
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
         when(courseDao.findAll()).thenReturn(courses);
-        when(courseMapperStruct.mapEntityToDomain(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
+        when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentsCources();
 
@@ -219,7 +219,7 @@ class StudentServiceImplTest {
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
         when(courseDao.getAllStudentCoursesByStudentID(anyInt())).thenReturn(courses);
-        when(courseMapperStruct.mapEntityToDomain(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
+        when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentCoursesByStudentId(studentId);
 

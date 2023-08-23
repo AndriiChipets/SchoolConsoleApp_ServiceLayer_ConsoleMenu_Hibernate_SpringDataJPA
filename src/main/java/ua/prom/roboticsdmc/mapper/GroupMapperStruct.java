@@ -11,8 +11,8 @@ public interface GroupMapperStruct {
 
     GroupMapperStruct INSTANCE = Mappers.getMapper(GroupMapperStruct.class);
 
-    GroupDto mapEntityToDomain(Group group);
+    GroupDto mapGroupToGroupDto(Group group);
 
-    Group mapDomainToEntity(GroupDto groupDto);
+    Group mapGroupDtoToGroup(GroupDto groupDto);
 
 }

@@ -1,6 +1,7 @@
 package ua.prom.roboticsdmc.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import ua.prom.roboticsdmc.domain.User;
@@ -11,8 +12,9 @@ public interface UserMapperStruct {
 
     UserMapperStruct INSTANCE = Mappers.getMapper(UserMapperStruct.class);
 
-    UserDto mapEntityToDomain(User user);
+    @Mapping(target = "password", ignore = true)
+    UserDto maUserToUserDto(User user);
 
-    User mapDomainToEntity(UserDto userDto);
+    User mapUserDtoToUser(UserDto userDto);
 
 }

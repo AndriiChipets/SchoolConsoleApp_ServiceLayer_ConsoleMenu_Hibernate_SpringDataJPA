@@ -1,6 +1,7 @@
 package ua.prom.roboticsdmc.service.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,9 +27,9 @@ import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.dto.CourseDto;
 import ua.prom.roboticsdmc.dto.GroupDto;
 import ua.prom.roboticsdmc.dto.StudentDto;
-import ua.prom.roboticsdmc.mapper.CourseMapper;
-import ua.prom.roboticsdmc.mapper.GroupMapper;
-import ua.prom.roboticsdmc.mapper.StudentMapper;
+import ua.prom.roboticsdmc.mapper.CourseMapperStruct;
+import ua.prom.roboticsdmc.mapper.GroupMapperStruct;
+import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
 
 @SpringBootTest(classes = {StudentServiceImpl.class})
 @DisplayName("StudentServiceImplTest")
@@ -44,13 +45,13 @@ class StudentServiceImplTest {
     GroupDao groupDao;
     
     @MockBean
-    StudentMapper studentMapper;
+    StudentMapperStruct studentMapperStruct;
     
     @MockBean
-    GroupMapper groupMapper;
+    CourseMapperStruct courseMapperStruct;
     
     @MockBean
-    CourseMapper courseMapper;
+    GroupMapperStruct groupMapperStruct;
 
     @Autowired
     StudentServiceImpl studentServiceImpl;
@@ -71,7 +72,7 @@ class StudentServiceImplTest {
         List<GroupDto> expectedGroupDto = new ArrayList<>(Arrays.asList(groupDto1, groupDto2, groupDto3));
 
         when(groupDao.findGroupWithLessOrEqualsStudentQuantity(anyInt())).thenReturn(groups);
-        when(groupMapper.mapEntityToDomain(any(Group.class)))
+        when(groupMapperStruct.mapGroupToGroupDto(any(Group.class)))
         .thenReturn(groupDto1)
         .thenReturn(groupDto2)
         .thenReturn(groupDto3);
@@ -123,7 +124,7 @@ class StudentServiceImplTest {
         List<StudentDto> expectedStudentDto = new ArrayList<>(Arrays.asList(studentDto1, studentDto2));
 
         when(studentDao.findStudentsByCourseName(anyString())).thenReturn(students);
-        when(studentMapper.mapEntityToDomain(any(Student.class)))
+        when(studentMapperStruct.mapStudentToStudentDto(any(Student.class)))
         .thenReturn(studentDto1)
         .thenReturn(studentDto2);
 
@@ -194,7 +195,7 @@ class StudentServiceImplTest {
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
         when(courseDao.findAll()).thenReturn(courses);
-        when(courseMapper.mapEntityToDomain(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
+        when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentsCources();
 
@@ -218,7 +219,7 @@ class StudentServiceImplTest {
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
         when(courseDao.getAllStudentCoursesByStudentID(anyInt())).thenReturn(courses);
-        when(courseMapper.mapEntityToDomain(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
+        when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentCoursesByStudentId(studentId);
 

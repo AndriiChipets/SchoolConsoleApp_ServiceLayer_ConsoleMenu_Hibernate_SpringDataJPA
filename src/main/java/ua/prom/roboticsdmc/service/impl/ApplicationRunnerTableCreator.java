@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.service.TableCreator;
 
 @Profile("!test")
@@ -17,10 +18,13 @@ public class ApplicationRunnerTableCreator implements ApplicationRunner {
 
     private static final String SCHEMA_FILE_PATH = "src/main/resources/sgl/schema.sql";
     private final TableCreator tableCreator;
+    private final UserDao userDao;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
 
-        tableCreator.createTables(SCHEMA_FILE_PATH);
+        if (userDao.isAnyTableInDbSchema()) {
+            tableCreator.createTables(SCHEMA_FILE_PATH);
+        }
     }
 }

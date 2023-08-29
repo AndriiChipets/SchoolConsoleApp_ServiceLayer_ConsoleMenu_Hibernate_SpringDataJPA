@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.dao.StudentDao;
@@ -15,6 +16,7 @@ import ua.prom.roboticsdmc.service.DataGenerator;
 
 @Component
 @AllArgsConstructor
+@Log4j2
 public class TableFiller {
 
     private final DataGenerator dataGenerator;
@@ -28,22 +30,24 @@ public class TableFiller {
     private static final int MIN_NUMBER_COURCES_FOR_STUDENT = 1;
     private static final int MAX_NUMBER_COURCES_FOR_STUDENT = 2;
 
-       protected void fillData() {
-            List<Student> students = dataGenerator.createRandomStudent(TOTAL_STUDENT_NUMBER);
-            List<Course> courses = dataGenerator.createCourse();
-            List<Group> groups = dataGenerator.createRandomGroup(TOTAL_GROUP_NUMBER);
-            studentDao.saveAll(students);
-            courseDao.saveAll(courses);
-            groupDao.saveAll(groups);
-            groups = new ArrayList<>(groupDao.findAll());
-            students = new ArrayList<>(studentDao.findAll());
-            students = dataGenerator.assignStudentToGroup(groups, students, MIN_NUMBER_STUDENTS_IN_GROUP,
-                    MAX_NUMBER_STUDENTS_IN_GROUP);
-            studentDao.distributeStudentsToGroups(students);
-            students = studentDao.findAll();
-            courses = courseDao.findAll();
-            List<List<Integer>> studentsAssignedToCourses = dataGenerator.assignStudentToCourses(students, courses,
-                    MIN_NUMBER_COURCES_FOR_STUDENT, MAX_NUMBER_COURCES_FOR_STUDENT);
-            courseDao.fillRandomStudentCourseTable(studentsAssignedToCourses);
-        }
+    protected void fillData() {
+        log.trace("Fill data to the tables");
+        List<Student> students = dataGenerator.createRandomStudent(TOTAL_STUDENT_NUMBER);
+        List<Course> courses = dataGenerator.createCourse();
+        List<Group> groups = dataGenerator.createRandomGroup(TOTAL_GROUP_NUMBER);
+        studentDao.saveAll(students);
+        courseDao.saveAll(courses);
+        groupDao.saveAll(groups);
+        groups = new ArrayList<>(groupDao.findAll());
+        students = new ArrayList<>(studentDao.findAll());
+        students = dataGenerator.assignStudentToGroup(groups, students, MIN_NUMBER_STUDENTS_IN_GROUP,
+                MAX_NUMBER_STUDENTS_IN_GROUP);
+        studentDao.distributeStudentsToGroups(students);
+        students = studentDao.findAll();
+        courses = courseDao.findAll();
+        List<List<Integer>> studentsAssignedToCourses = dataGenerator.assignStudentToCourses(students, courses,
+                MIN_NUMBER_COURCES_FOR_STUDENT, MAX_NUMBER_COURCES_FOR_STUDENT);
+        courseDao.fillRandomStudentCourseTable(studentsAssignedToCourses);
+        log.trace("Data filled to the tables");
+    }
 }

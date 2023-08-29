@@ -7,10 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.User;
 
 @Repository
+@Log4j2
 public class UserDaoImpl extends AbstractCrudDaoImpl<Integer, User> implements UserDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.users (first_name, last_name, email, password) VALUES (?,?,?,?)";
@@ -53,17 +55,21 @@ public class UserDaoImpl extends AbstractCrudDaoImpl<Integer, User> implements U
 
     @Override
     public Optional<User> findByEmail(String email) {
+        log.trace("Find user by email = " + email);
         User user = null;
         try {
             user = jdbcTemplate.queryForObject(FIND_BY_EMAIL_QUERY, createRowMapper(), email);
         } catch (DataAccessException e) {
+            log.warn("User with email = " + email + " is absent");
             return Optional.empty();
         }
+        log.trace("Return user by email = " + email);
         return Optional.of(user);
     }
 
     @Override
     public boolean isAnyTableInDbSchema() {
+        log.trace("Check is any table exist in data base schema");
         return jdbcTemplate.queryForList(CHECKING_EXISTENCE_TABLES_IN_SCHEMA_QUERY).isEmpty();
     }
 }

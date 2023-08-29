@@ -6,10 +6,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.domain.Group;
 
 @Repository
+@Log4j2
 public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements GroupDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.groups (group_name) VALUES (?)";
@@ -56,6 +58,7 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
 
     @Override
     public List<Group> findGroupWithLessOrEqualsStudentQuantity(Integer studentQuantity) {
+        log.trace("Find group with less or equals student quantity = " + studentQuantity);
         return jdbcTemplate.query(FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY, createRowMapper(), studentQuantity);
     }
 }

@@ -5,4 +5,6 @@
 .project
 .factorypath
 lib/
+logs/
 dependency-reduced-pom.xml
+

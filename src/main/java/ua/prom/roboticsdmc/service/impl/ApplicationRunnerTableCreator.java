@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import lombok.AllArgsConstructor;
+import ua.prom.roboticsdmc.controller.FrontController;
 import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.service.TableCreator;
 
@@ -15,6 +16,7 @@ import ua.prom.roboticsdmc.service.TableCreator;
 public class ApplicationRunnerTableCreator implements ApplicationRunner {
 
     private static final String SCHEMA_FILE_PATH = "src/main/resources/sgl/schema.sql";
+    private final FrontController frontController;
     private final TableCreator tableCreator;
     private final TableFiller tableFiller;
     private final UserDao userDao;
@@ -26,5 +28,6 @@ public class ApplicationRunnerTableCreator implements ApplicationRunner {
             tableCreator.createTables(SCHEMA_FILE_PATH);
             tableFiller.fillData();
         }
+        frontController.run();
     }
 }

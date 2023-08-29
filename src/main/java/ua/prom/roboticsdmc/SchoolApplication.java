@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
-import ua.prom.roboticsdmc.controller.FrontController;
 
 public class SchoolApplication {
 
@@ -12,9 +11,6 @@ public class SchoolApplication {
 
         try (ConfigurableApplicationContext context = SpringApplication.run(
                 SchoolApplicationConfig.class)) {
-
-            FrontController frontController = context.getBean(FrontController.class);
-            frontController.run();
         }
     }
 }

@@ -7,10 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.domain.Course;
 
 @Repository
+@Log4j2
 public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implements CourseDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.courses (course_name, course_description) VALUES (?, ?)";
@@ -61,22 +63,27 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
 
     @Override
     public List<Course> getAllStudentCoursesByStudentID(Integer studentId) {
+        log.trace("Get all student courses by student ID = " + studentId);
         return jdbcTemplate.query(GET_ALL_STUDENT_COURSES_BY_STUDENT_ID_QUERY, createRowMapper(), studentId);
     }
 
     @Override
-    public void addStudentToCourse(Integer studentId, Integer coursesId) {
-        jdbcTemplate.update(ADD_STUDENT_TO_COURSE_QUERY, studentId, coursesId);
+    public void addStudentToCourse(Integer studentId, Integer courseId) {
+        log.trace("Add student with ID=" + studentId + "to course with ID = " + courseId);
+        jdbcTemplate.update(ADD_STUDENT_TO_COURSE_QUERY, studentId, courseId);
+        log.trace("Student with ID=" + studentId + "added to course with ID = " + courseId);
     }
 
     @Override
     public void removeStudentFromCourse(Integer studentId, Integer courseId) {
+        log.trace("Remove student with ID=" + studentId + "from course with ID = " + courseId);
         jdbcTemplate.update(DELETE_STUDENT_FROM_COURSE_QUERY, studentId, courseId);
+        log.trace("Student with ID=" + studentId + "removed from course with ID = " + courseId);
     }
     
     @Override
     public void fillRandomStudentCourseTable(List<List<Integer>> studentIdCoursesId) {
-
+        log.trace("Fill random student to course table");
         List<Object[]> batch = new ArrayList<>();
         for (int i = 0; i < studentIdCoursesId.size(); i++) {
             List<Integer> coursesId = studentIdCoursesId.get(i);
@@ -86,6 +93,7 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
             }
         }
         jdbcTemplate.batchUpdate(FILL_RAMDOMLY_STUDENT_COURSE_TABLE_QUERY, batch);
+        log.trace("Random student filled to course table");
     }
     
     protected Object[] getStudentIdCourseIdToSave(Integer studentId, Integer courseId) {

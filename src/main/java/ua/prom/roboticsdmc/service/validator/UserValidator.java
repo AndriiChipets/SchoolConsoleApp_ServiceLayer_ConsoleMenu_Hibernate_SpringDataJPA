@@ -3,8 +3,10 @@ package ua.prom.roboticsdmc.service.validator;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.domain.User;
 
+@Log4j2
 @ua.prom.roboticsdmc.anotation.Validator
 public class UserValidator implements Validator<User> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&*+/=?`{}~^.-]+@[a-zA-Z0-9.-]+$");
@@ -14,6 +16,7 @@ public class UserValidator implements Validator<User> {
     @Override
     public void validate(User user) {
         if (user == null) {
+            log.error("User is absent");
             throw new ValidateException("User is absent");
         }
         validateEmail(user);
@@ -31,6 +34,7 @@ public class UserValidator implements Validator<User> {
     private static void validateString(Pattern pattern, User user, Function<User, String> function,
             String exceptionMessage) {
         if (!pattern.matcher(function.apply(user)).matches()) {
+            log.error(exceptionMessage);
             throw new ValidateException(exceptionMessage);
         }
     }

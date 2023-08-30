@@ -7,10 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.StudentDao;
 import ua.prom.roboticsdmc.domain.Student;
 
 @Repository
+@Log4j2
 public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implements StudentDao {
 
     private static final String SAVE_QUERY = "INSERT INTO school_app_schema.users (group_id, first_name, last_name, email, password) VALUES (?,?,?,?,?)";
@@ -75,22 +77,27 @@ public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implem
 
     @Override
     public List<Student> findStudentsByCourseName(String courseName) {
+        log.trace("Find student by course name = " + courseName);
         return jdbcTemplate.query(FIND_STUDENTS_BY_COURSE_NAME_QUERY, createRowMapper(), courseName);
     }
     
     @Override
     public void distributeStudentsToGroups(List<Student> students) {
         
+        log.trace("Distribute students to groups");
         List<Object[]> batch = new ArrayList<>();
         for (Student student : students) {
             Object[] values = getEntityPropertiesToUpdateGroup(student);
             batch.add(values);
         }
         jdbcTemplate.batchUpdate(DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY, batch);
+        log.trace("Students are distributed to groups");
     }
     
     @Override
     public void addStudentToGroup(Integer groupId, Integer studentId) {
+        log.trace("Add student with ID = " + studentId +" to group with ID = " + groupId);
         jdbcTemplate.update(DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY, groupId, studentId);
+        log.trace("Student with ID = " + studentId +" added to group with ID = " + groupId);
     }
 }

@@ -8,8 +8,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.jpa.EntityManagerFactoryInfo;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.anotation.DataGenerator;
@@ -21,26 +23,28 @@ import ua.prom.roboticsdmc.service.TableCreator;
 @AllArgsConstructor
 public class TableCreatorImpl implements TableCreator {
 
-    private final JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     public void createTables(String schemaFilePath) {
-        log.info("Create tables");
-        log.trace("Create connection");
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection()) {
-            log.trace("Connection created");
-            log.trace("Create scriptRunner");
+        log.info("Method start");
+        log.info("Create connection");
+        EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) entityManager.getEntityManagerFactory();
+        try (Connection connection = info.getDataSource().getConnection()) {
+            log.info("Connection created");
+            log.info("Create scriptRunner");
             ScriptRunner scriptRunner = new ScriptRunner(connection);
-            log.trace("ScriptRunner created");
-            log.trace("Create reader to execute script");
+            log.info("ScriptRunner created");
+            log.info("Create reader to execute script");
             try (Reader reader = new BufferedReader(new FileReader(schemaFilePath))) {
                 scriptRunner.runScript(reader);
-                log.trace("Reader created, script executed");
+                log.info("Reader created, script executed");
             }
-
         } catch (SQLException | IOException e) {
             log.error("Schema and tables are not created.. " + e);
             throw new DataBaseSqlRuntimeException("Schema and tables are not created..", e);
         }
+        log.info("Method end");
     }
 }

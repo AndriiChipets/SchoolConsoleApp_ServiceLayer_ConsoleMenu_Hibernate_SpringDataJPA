@@ -9,14 +9,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import lombok.extern.log4j.Log4j2;
+
 @Configuration
 @ComponentScan(basePackages = "ua.prom.roboticsdmc")
 @PropertySource("database.properties")
+@Log4j2
 public class SchoolApplicationConfig {
 
     @Bean
@@ -31,7 +33,9 @@ public class SchoolApplicationConfig {
             @Value("${db.prepStmtCacheSqlLimit.param}") String prepStmtCacheSqlLimitParam,
             @Value("${db.prepStmtCacheSqlLimit.value}") String prepStmtCacheSqlLimitValue,
             @Value("${db.maximumPoolSize}") int maximumPoolSize) {
-
+        log.info("Method start");
+        log.info("Create new DataSource");
+        log.info("method end");
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(user);
@@ -40,17 +44,16 @@ public class SchoolApplicationConfig {
         config.addDataSourceProperty(prepStmtCacheSizeParam, prepStmtCacheSizeValue);
         config.addDataSourceProperty(prepStmtCacheSqlLimitParam, prepStmtCacheSqlLimitValue);
         config.setMaximumPoolSize(maximumPoolSize);
-        
+        log.info("New DataSource created");
+        log.info("method end");
         return new HikariDataSource(config);
     }
 
     @Bean
     public Scanner getScanner() {
+        log.info("Create Scanner");
         return new Scanner(System.in);
     }
-
-    @Bean
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
+    
+    
 }

@@ -1,11 +1,12 @@
 package ua.prom.roboticsdmc.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.domain.Group;
@@ -14,51 +15,38 @@ import ua.prom.roboticsdmc.domain.Group;
 @Log4j2
 public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements GroupDao {
 
-    private static final String SAVE_QUERY = "INSERT INTO school_app_schema.groups (group_name) VALUES (?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.groups WHERE group_id=?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM school_app_schema.groups ORDER BY group_id ASC";
-    private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.groups ORDER BY group_id ASC LIMIT ? OFFSET ?";
-    private static final String UPDATE_QUERY = "UPDATE school_app_schema.groups SET group_name=? WHERE group_id=?";
-    private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.groups WHERE group_id=?";
-    private static final String FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY = 
-            "SELECT school_app_schema.users.group_id, school_app_schema.groups.group_name, COUNT (school_app_schema.users.user_id) "
-            + "FROM school_app_schema.users " 
-            + "INNER JOIN school_app_schema.groups "
-            + "ON school_app_schema.users.group_id = school_app_schema.groups.group_id "
-            + "GROUP BY school_app_schema.users.group_id, school_app_schema.groups.group_name "
-            + "HAVING COUNT (school_app_schema.users.user_id) <= ? "
-            + "ORDER BY school_app_schema.users.group_id;";
+    private static final String FIND_BY_ID_QUERY_HQL = "SELECT g FROM Group g WHERE g.groupId=:id";
+    private static final String FIND_ALL_QUERY_HQL = "SELECT g FROM Group g ORDER BY g.groupId ASC";
+    private static final String DELETE_BY_ID_QUERY_HQL = "DELETE FROM Group g WHERE g.groupId=:id";
+    private static final String FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY = "SELECT s.groupId, g.groupName, COUNT (s.userId) "
+            + "FROM Student s JOIN Group g " + "ON s.groupId = g.groupId " + "GROUP BY s.groupId, g.groupName "
+            + "HAVING COUNT (s.userId) <=:quantity " + "ORDER BY s.groupId ASC";
 
-    public GroupDaoImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
-                DELETE_BY_ID_QUERY);
-    }
-    
-    @Override
-    protected RowMapper<Group> createRowMapper() {
-        return (rs, rowNum) -> {
-            return Group.builder()
-                    .withGroupId(rs.getInt("group_id"))
-                    .withGroupName(rs.getString("group_name"))
-                    .build();
-        };
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Override
-    protected Object[] getEntityPropertiesToSave(Group group) {
-        return new Object[] { group.getGroupName() };
-    }
-
-    @Override
-    protected Object[] getEntityPropertiesToUpdate(Group group) {
-        return new Object[] { 
-                group.getGroupName(), 
-                group.getGroupId() };
+    public GroupDaoImpl() {
+        super(FIND_BY_ID_QUERY_HQL, FIND_ALL_QUERY_HQL, DELETE_BY_ID_QUERY_HQL);
     }
 
     @Override
     public List<Group> findGroupWithLessOrEqualsStudentQuantity(Integer studentQuantity) {
-        log.trace("Find group with less or equals student quantity = " + studentQuantity);
-        return jdbcTemplate.query(FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY, createRowMapper(), studentQuantity);
+        log.info("Method start");
+        log.info("Find group with less or equals student quantity = " + studentQuantity);
+        List<Group> groups = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        List<Object[]> results = entityManager.createQuery(FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY)
+                .setParameter("quantity", studentQuantity).getResultList();
+        results.stream().forEach((r) -> {
+            Integer groupId = (Integer) r[0];
+            String groupName = (String) r[1];
+            Group group = Group.builder()
+                    .withGroupId(groupId)
+                    .withGroupName(groupName)
+                    .build();
+            groups.add(group);
+        });
+        log.info("Method end");
+        return groups;
     }
 }

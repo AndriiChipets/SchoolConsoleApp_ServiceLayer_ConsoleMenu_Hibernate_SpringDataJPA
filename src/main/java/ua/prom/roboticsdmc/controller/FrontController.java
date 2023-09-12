@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
 import ua.prom.roboticsdmc.dto.CourseDto;
 import ua.prom.roboticsdmc.dto.GroupDto;
@@ -15,6 +16,7 @@ import ua.prom.roboticsdmc.view.ViewProvider;
 
 @Service
 @AllArgsConstructor
+@Log4j2
 public class FrontController {
     
    private static final String MENU = "\n\t ============ Please, choose what do you want to do ============\n"
@@ -32,10 +34,13 @@ public class FrontController {
    private final ViewProvider viewProvider;
 
    public void run() {
+       log.info("Method start");
        if (!login()) {
+           log.info("Register new User");
            viewProvider.printMessage("You are not registred, please register");
            addNewUser();
            viewProvider.printMessage("Thank you, you are registred");
+           log.info("New User registred");
        }
        boolean isWork = true;
        while (isWork) {
@@ -53,6 +58,7 @@ public class FrontController {
            default -> viewProvider.printMessage(WRONG_CHOICE_MESSAGE);
            }
        }
+       log.info("method end");
    }
 
    private boolean login() {

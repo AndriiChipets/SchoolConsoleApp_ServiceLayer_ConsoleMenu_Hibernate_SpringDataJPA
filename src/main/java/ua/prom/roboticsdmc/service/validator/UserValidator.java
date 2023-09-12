@@ -15,27 +15,35 @@ public class UserValidator implements Validator<User> {
 
     @Override
     public void validate(User user) {
+        log.info("Method start");
         if (user == null) {
             log.error("User is absent");
             throw new ValidateException("User is absent");
         }
         validateEmail(user);
         validatePassword(user);
+        log.info("Method end");
     }
 
     private static void validateEmail(User user) {
+        log.info("Method start");
         validateString(EMAIL_PATTERN, user, User::getEmail, "Email do not match the pattern");
+        log.info("Method end");
     }
 
     private static void validatePassword(User user) {
+        log.info("Method start");
         validateString(PASSWORD_PATTERN, user, User::getPassword, "Password do not match the pattern");
+        log.info("Method end");
     }
 
     private static void validateString(Pattern pattern, User user, Function<User, String> function,
             String exceptionMessage) {
+        log.info("Method start");
         if (!pattern.matcher(function.apply(user)).matches()) {
             log.error(exceptionMessage);
             throw new ValidateException(exceptionMessage);
         }
+        log.info("Method end");
     }
 }

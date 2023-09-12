@@ -1,92 +1,106 @@
 package ua.prom.roboticsdmc.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.CrudDao;
 
 @Log4j2
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class AbstractCrudDaoImpl<ID, E> implements CrudDao<ID, E> {
 
-    protected JdbcTemplate jdbcTemplate;
-    private final String saveQuery;
     private final String findByIdQuery;
     private final String findAllQuery;
-    private final String findAllPeginationQuery;
-    private final String updateQuery;
     private final String deleteByIdQuery;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Override
+    @Transactional
     public void save(E entity) {
-        log.trace("Save entity");
-        jdbcTemplate.update(saveQuery, getEntityPropertiesToSave(entity));
-        log.trace("Entity saved");
+        log.info("Method start");
+        log.info("Save " + entity);
+        entityManager.persist(entity);
+        log.info("Entity " + entity);
+        log.info("Method end");
     }
 
     @Override
+    @Transactional
     public void saveAll(List<E> entities) {
-
-        log.trace("Save List of entities");
-        List<Object[]> batch = new ArrayList<>();
-        for (E entity : entities) {
-            Object[] values = getEntityPropertiesToSave(entity);
-            batch.add(values);
+        log.info("Method start");
+        int batchSize = entities.size() - 1;
+        log.info("Save List of entities");
+        for (int i = 0; i < entities.size(); i++) {
+            if (i > 0 && i % batchSize == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+            entityManager.persist(entities.get(i));
         }
-        jdbcTemplate.batchUpdate(saveQuery, batch);
-        log.trace("List of entities saved");
+        log.info("List of entities saved");
+        log.info("Method end");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<E> findById(ID id) {
-        log.trace("Find entity by ID = " + id);
+        log.info("Method start");
+        log.info("Find entity by ID = " + id);
         E entity = null;
         try {
-            entity = jdbcTemplate.queryForObject(findByIdQuery, createRowMapper(), id);
-        } catch (DataAccessException e) {
+            entity = (E) entityManager.createQuery(findByIdQuery).setParameter("id", id).getSingleResult();
+        } catch (NoResultException e) {
             log.warn("Entity is absent in the table");
             return Optional.empty();
         }
-        log.trace("Return entity by ID = " + id);
+        log.info("Return entity by ID = " + id);
+        log.info("Method end");
         return Optional.of(entity);
     }
 
     @Override
+    @Transactional
     public void deleteById(ID id) {
-        log.trace("Delete entity by ID = " + id);
-        jdbcTemplate.update(deleteByIdQuery, id);
-        log.trace("Entity by ID =" + id + "is deleted");
+        log.info("Method start");
+        log.info("Delete entity by ID = " + id);
+        entityManager.createQuery(deleteByIdQuery).setParameter("id", id).executeUpdate();
+        log.info("Entity by ID =" + id + "is deleted");
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<E> findAll() {
-        return jdbcTemplate.query(findAllQuery, createRowMapper());
+        log.info("Method start");
+        log.info("Method end");
+        return entityManager.createQuery(findAllQuery).getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<E> findAll(int rawOffset, int rawLimit) {
-        log.trace("Return List of entities");
-        return jdbcTemplate.query(findAllPeginationQuery, createRowMapper(), rawLimit, rawOffset);
+        log.info("Method start");
+        log.info("Return List of entities with rawOffset = " + rawOffset + "and rawLimit = " + rawLimit);
+        log.info("Method end");
+        return entityManager.createQuery(findAllQuery).setFirstResult(rawOffset).setMaxResults(rawLimit)
+                .getResultList();
     }
 
     @Override
+    @Transactional
     public void update(E entity) {
-        log.trace("Update entity");
-        jdbcTemplate.update(updateQuery, getEntityPropertiesToUpdate(entity));
-        log.trace("Entity updated");
+        log.info("Method start");
+        log.info("Update " + entity);
+        entityManager.merge(entity);
+        log.info(entity + " updated");
+        log.info("Method end");
     }
-
-    protected abstract RowMapper<E> createRowMapper();
-
-    protected abstract Object[] getEntityPropertiesToSave(E entity);
-
-    protected abstract Object[] getEntityPropertiesToUpdate(E entity);
 }

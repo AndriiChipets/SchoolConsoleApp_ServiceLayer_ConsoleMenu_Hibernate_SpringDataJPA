@@ -1,23 +1,36 @@
 package ua.prom.roboticsdmc.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import ua.prom.roboticsdmc.converter.StringTrimConverter;
 
-@Data
+@Entity
+@Table(name = "groups", schema = "school_app_schema")
+@EqualsAndHashCode
+@Getter
 @Builder(setterPrefix = "with")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(force = true)
 public class Group {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "group_id")
     private final Integer groupId;
+
+    @Column(name = "group_name", length = 40, nullable = false, unique = true)
+    @Convert(converter = StringTrimConverter.class)
     private final String groupName;
 
-    public static class GroupBuilder {
-
-        public GroupBuilder withGroupName(String groupName) {
-            this.groupName = groupName != null ? groupName.trim() : null;
-            return this;
-        }
-    }
 }

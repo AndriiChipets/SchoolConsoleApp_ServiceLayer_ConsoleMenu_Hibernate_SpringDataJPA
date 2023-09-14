@@ -25,7 +25,6 @@ public class ApplicationRunnerTableCreator implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Method start");
         if (userDao.isAnyTableInDbSchema()) {
             log.info("Create tables and add data to tables");
             tableCreator.createTables(SCHEMA_FILE_PATH);
@@ -34,6 +33,5 @@ public class ApplicationRunnerTableCreator implements ApplicationRunner {
             log.info("Data added");
         }
         frontController.run();
-        log.info("Method end");
     }
 }

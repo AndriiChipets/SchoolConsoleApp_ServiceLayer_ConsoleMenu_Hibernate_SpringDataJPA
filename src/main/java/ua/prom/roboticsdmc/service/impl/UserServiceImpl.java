@@ -24,7 +24,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean login(String email, String password) {
-        log.info("Method start");
         log.info("Check if user with email = " + email + " exists in the data base");
         User userToValidate = User.builder()
                 .withEmail(email)
@@ -36,7 +35,6 @@ public class UserServiceImpl implements UserService {
         String encriptPassword = passwordEncriptor.encript(password);
         log.info("Return result is user with email = " + email + " exists");
         Optional<User> userByEmail = userDao.findByEmail(email);
-        log.info("Method end");
         return userByEmail
                 .map(User::getPassword)
                 .filter(pass -> pass.equals(encriptPassword))
@@ -45,7 +43,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserRegistrationRequest registrationRequest) {
-        log.info("Method start");
         log.info("Register new user");
         User userToValidate = User.builder()
                 .withEmail(registrationRequest.getEmail())
@@ -69,6 +66,5 @@ public class UserServiceImpl implements UserService {
         log.info("Add new user to the data base");
         userDao.save(userWithEncriptPassword);
         log.info("New user added to the data base");
-        log.info("Method end");
     }
 }

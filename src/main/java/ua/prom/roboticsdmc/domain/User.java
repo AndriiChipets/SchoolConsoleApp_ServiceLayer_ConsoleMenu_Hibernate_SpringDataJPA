@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ua.prom.roboticsdmc.converter.StringTrimConverter;
 
@@ -25,6 +26,7 @@ import ua.prom.roboticsdmc.converter.StringTrimConverter;
 @Getter
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor(force = true)
+@ToString
 public class User {
 
     @Id

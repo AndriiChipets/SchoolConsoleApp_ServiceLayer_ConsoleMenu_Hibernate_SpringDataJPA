@@ -18,7 +18,7 @@ public interface StudentService {
 
     void removeStudentFromOneOfTheirCourses(Integer studentId, Integer courseId);
 
-    List<CourseDto> findAllStudentsCources();
+    List<CourseDto> findAllCources();
 
     List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId);
 

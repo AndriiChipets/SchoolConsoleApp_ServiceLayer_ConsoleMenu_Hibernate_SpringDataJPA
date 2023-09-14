@@ -33,9 +33,7 @@ public class SchoolApplicationConfig {
             @Value("${db.prepStmtCacheSqlLimit.param}") String prepStmtCacheSqlLimitParam,
             @Value("${db.prepStmtCacheSqlLimit.value}") String prepStmtCacheSqlLimitValue,
             @Value("${db.maximumPoolSize}") int maximumPoolSize) {
-        log.info("Method start");
         log.info("Create new DataSource");
-        log.info("method end");
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(url);
         config.setUsername(user);
@@ -45,7 +43,6 @@ public class SchoolApplicationConfig {
         config.addDataSourceProperty(prepStmtCacheSqlLimitParam, prepStmtCacheSqlLimitValue);
         config.setMaximumPoolSize(maximumPoolSize);
         log.info("New DataSource created");
-        log.info("method end");
         return new HikariDataSource(config);
     }
 
@@ -54,6 +51,5 @@ public class SchoolApplicationConfig {
         log.info("Create Scanner");
         return new Scanner(System.in);
     }
-    
     
 }

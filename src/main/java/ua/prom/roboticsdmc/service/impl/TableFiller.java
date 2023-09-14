@@ -31,7 +31,6 @@ public class TableFiller {
     private static final int MAX_NUMBER_COURCES_FOR_STUDENT = 3;
 
     protected void fillData() {
-        log.info("Method start");
         log.info("Fill data to the tables");
         List<Student> students = dataGenerator.createRandomStudent(TOTAL_STUDENT_NUMBER);
         List<Course> courses = dataGenerator.createCourse();
@@ -68,6 +67,5 @@ public class TableFiller {
         studentDao.fillRandomStudentCourseTable(studentsAssignedToCourses);
         log.info("Students assigned to the Courses");
         log.info("Data filled to the tables");
-        log.info("Method end");
     }
 }

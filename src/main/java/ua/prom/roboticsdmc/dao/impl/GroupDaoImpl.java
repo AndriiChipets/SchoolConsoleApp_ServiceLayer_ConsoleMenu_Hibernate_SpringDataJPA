@@ -31,7 +31,6 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
 
     @Override
     public List<Group> findGroupWithLessOrEqualsStudentQuantity(Integer studentQuantity) {
-        log.info("Method start");
         log.info("Find group with less or equals student quantity = " + studentQuantity);
         List<Group> groups = new ArrayList<>();
         @SuppressWarnings("unchecked")
@@ -46,7 +45,6 @@ public class GroupDaoImpl extends AbstractCrudDaoImpl<Integer, Group> implements
                     .build();
             groups.add(group);
         });
-        log.info("Method end");
         return groups;
     }
 }

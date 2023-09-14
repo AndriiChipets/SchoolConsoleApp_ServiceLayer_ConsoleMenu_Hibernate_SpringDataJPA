@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.ClassRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -27,7 +27,8 @@ import ua.prom.roboticsdmc.domain.User;
 import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @ActiveProfiles("test")
-@JdbcTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+        UserDaoImpl.class }))
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
@@ -46,13 +47,7 @@ class UserDaoImplTest {
     public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
     UserDao userDao;
-
-    @BeforeEach
-    void setUp() {
-        userDao = new UserDaoImpl(jdbcTemplate);
-    }
 
     @Test
     @DisplayName("save method should add User to the table")

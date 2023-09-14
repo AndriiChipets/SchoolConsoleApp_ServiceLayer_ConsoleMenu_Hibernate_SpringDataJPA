@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -25,6 +26,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder(setterPrefix = "with")
 @NoArgsConstructor(force = true)
+@ToString(callSuper = true)
 public class Student extends User {
 
     @Column(name = "group_id")
@@ -38,5 +40,14 @@ public class Student extends User {
         inverseJoinColumns = { @JoinColumn(name = "course_id") }
     )
     private Set<Course> courses = new HashSet<>();
-
+    
+    public void removeCourse(Course course) {
+        this.courses.remove(course);
+        course.getStudents().remove(this);
+    }
+    
+    public void addCourse(Course course) {
+        this.courses.add(course);
+        course.getStudents().add(this);
+    }
 }

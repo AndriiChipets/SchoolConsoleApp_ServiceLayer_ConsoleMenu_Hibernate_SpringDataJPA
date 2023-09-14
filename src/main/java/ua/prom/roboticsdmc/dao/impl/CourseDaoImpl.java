@@ -1,6 +1,7 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +11,7 @@ import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.domain.Course;
+import ua.prom.roboticsdmc.domain.Student;
 
 @Repository
 @Log4j2
@@ -29,7 +31,6 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
 
     @Override
     public Optional<Course> findCourseByCourseName(String courseName) {
-        log.info("Method start");
         log.info("Find course by courseName = " + courseName);
         Course course = null;
         try {
@@ -40,7 +41,12 @@ public class CourseDaoImpl extends AbstractCrudDaoImpl<Integer, Course> implemen
             return Optional.empty();
         }
         log.info("Return entity by courseName = " + courseName);
-        log.info("Method end");
         return Optional.of(course);
+    }
+    
+    @Override
+    public Set<Student> findStudentsByCourseName(String courseName) {
+        log.trace("Find student by course name = " + courseName);
+        return findCourseByCourseName(courseName).get().getStudents();
     }
 }

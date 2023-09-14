@@ -32,7 +32,6 @@ public class DataGeneratorImpl implements DataGenerator {
 
     @Override
     public List<Student> createRandomStudent(int studentsNumber) {
-        log.info("Method start");
         log.info("Create random " + studentsNumber + " students");
         List<Student> studentNames = new ArrayList<>();
         Random random = new Random();
@@ -45,13 +44,11 @@ public class DataGeneratorImpl implements DataGenerator {
             studentNames.add(student);
         }
         log.info("Random " + studentsNumber + " students are created");
-        log.info("Method end");
         return studentNames;
     }
 
     @Override
     public List<Group> createRandomGroup(int groupNumber) {
-        log.info("Method start");
         log.info("Create random " + groupNumber + " groups");
         List<Group> newGroups = new ArrayList<>();
         Random random = new Random();
@@ -66,13 +63,11 @@ public class DataGeneratorImpl implements DataGenerator {
             newGroups.add(Group.builder().withGroupName(String.format("%s-%s", lettersBldr, numbersBldr)).build());
         }
         log.info("Random " + groupNumber + " groups are created");
-        log.info("Method end");
         return newGroups;
     }
 
     @Override
     public List<Course> createCourse() {
-        log.info("Method start");
         log.info("Create list of courses");
         List<Course> newCourses = new ArrayList<>();
 
@@ -81,14 +76,12 @@ public class DataGeneratorImpl implements DataGenerator {
             newCourses.add(course);
         }
         log.info("List of courses are created");
-        log.info("Method end");
         return newCourses;
     }
 
     @Override
     public List<Student> assignStudentToGroup(List<Group> groups, List<Student> students, int minStudentInGroup,
             int maxStudentInGroup) {
-        log.info("Method start");
         log.info("Assign students to groups");
         int studentsQuantity = students.size();
         boolean isFreeStudent = studentsQuantity > 0;
@@ -115,14 +108,12 @@ public class DataGeneratorImpl implements DataGenerator {
             }
         }
         log.info("Students are assigned to groups");
-        log.info("Method end");
         return students;
     }
 
     @Override
     public List<Student> assignStudentToCourses(List<Student> students, List<Course> courses, int minStudentCourses,
             int maxStudentCourses) {
-        log.info("Method start");
         log.info("Assign students to courses");
         Random random = new Random();
         List<Student> studentsAssignToCourses = new ArrayList<>();
@@ -150,7 +141,6 @@ public class DataGeneratorImpl implements DataGenerator {
             studentsAssignToCourses.add(studentAssignToCourse);
         }
         log.info("Students are assigned to courses");
-        log.info("Method end");
         return studentsAssignToCourses;
     }
 

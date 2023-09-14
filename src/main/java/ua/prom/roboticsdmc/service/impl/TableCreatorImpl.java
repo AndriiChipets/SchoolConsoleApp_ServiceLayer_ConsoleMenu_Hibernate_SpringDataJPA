@@ -28,7 +28,6 @@ public class TableCreatorImpl implements TableCreator {
 
     @Override
     public void createTables(String schemaFilePath) {
-        log.info("Method start");
         log.info("Create connection");
         EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) entityManager.getEntityManagerFactory();
         try (Connection connection = info.getDataSource().getConnection()) {
@@ -45,6 +44,5 @@ public class TableCreatorImpl implements TableCreator {
             log.error("Schema and tables are not created.. " + e);
             throw new DataBaseSqlRuntimeException("Schema and tables are not created..", e);
         }
-        log.info("Method end");
     }
 }

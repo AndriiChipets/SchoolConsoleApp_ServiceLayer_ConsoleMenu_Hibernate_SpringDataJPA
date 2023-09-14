@@ -34,7 +34,6 @@ public class FrontController {
    private final ViewProvider viewProvider;
 
    public void run() {
-       log.info("Method start");
        if (!login()) {
            log.info("Register new User");
            viewProvider.printMessage("You are not registred, please register");
@@ -58,7 +57,6 @@ public class FrontController {
            default -> viewProvider.printMessage(WRONG_CHOICE_MESSAGE);
            }
        }
-       log.info("method end");
    }
 
    private boolean login() {
@@ -142,7 +140,7 @@ public class FrontController {
     }
 
     private void findAllCourses() {
-        List<CourseDto> allCourses = studentService.findAllStudentsCources();
+        List<CourseDto> allCourses = studentService.findAllCources();
         allCourses.forEach(e -> viewProvider.printMessage(e.toString()));
     }
     

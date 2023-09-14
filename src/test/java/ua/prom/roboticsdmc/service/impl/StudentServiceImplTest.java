@@ -10,17 +10,21 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.dao.GroupDao;
 import ua.prom.roboticsdmc.dao.StudentDao;
+import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.Course;
 import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
@@ -31,12 +35,16 @@ import ua.prom.roboticsdmc.mapper.CourseMapperStruct;
 import ua.prom.roboticsdmc.mapper.GroupMapperStruct;
 import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = {StudentServiceImpl.class})
 @DisplayName("StudentServiceImplTest")
 class StudentServiceImplTest {
 
     @MockBean
     StudentDao studentDao;
+    
+    @MockBean
+    UserDao userDao;
     
     @MockBean
     CourseDao courseDao;
@@ -105,7 +113,7 @@ class StudentServiceImplTest {
                 .withLastName("Jackson")
                 .withEmail("patricia.jackson@gmail.com")
                 .build();
-        List<Student> students = new ArrayList<Student>(Arrays.asList(student1, student2));
+        Set<Student> students = new HashSet<Student>(Arrays.asList(student1, student2));
         
         StudentDto studentDto1 = StudentDto.builder()
                 .withUserId(3)
@@ -123,7 +131,7 @@ class StudentServiceImplTest {
                 .build();
         List<StudentDto> expectedStudentDto = new ArrayList<>(Arrays.asList(studentDto1, studentDto2));
 
-        when(studentDao.findStudentsByCourseName(anyString())).thenReturn(students);
+        when(courseDao.findStudentsByCourseName(anyString())).thenReturn(students);
         when(studentMapperStruct.mapStudentToStudentDto(any(Student.class)))
         .thenReturn(studentDto1)
         .thenReturn(studentDto2);
@@ -133,7 +141,7 @@ class StudentServiceImplTest {
         assertNotNull(actualStudentDto);
         assertEquals(expectedStudentDto, actualStudentDto);
 
-        verify(studentDao).findStudentsByCourseName(anyString());
+        verify(courseDao).findStudentsByCourseName(anyString());
     }
     
     @Test
@@ -143,7 +151,7 @@ class StudentServiceImplTest {
         int userId = 20;
         studentServiceImpl.deleteUserByUser_Id(userId);
 
-        verify(studentDao).deleteById(userId);
+        verify(userDao).deleteById(userId);
     }
     
     @Test
@@ -155,7 +163,7 @@ class StudentServiceImplTest {
         
         studentServiceImpl.addStudentToCourse(studentId, courseId);
 
-        verify(courseDao).addStudentToCourse(studentId, courseId);
+        verify(studentDao).addStudentToCourse(studentId, courseId);
     }
     
     @Test
@@ -167,7 +175,7 @@ class StudentServiceImplTest {
         
         studentServiceImpl.removeStudentFromOneOfTheirCourses(studentId, courseId);
 
-        verify(courseDao).removeStudentFromCourse(studentId, courseId);
+        verify(studentDao).removeStudentFromCourse(studentId, courseId);
     }
     
     @Test
@@ -197,7 +205,7 @@ class StudentServiceImplTest {
         when(courseDao.findAll()).thenReturn(courses);
         when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
-        List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentsCources();
+        List<CourseDto> actualCourseDto = studentServiceImpl.findAllCources();
 
         assertNotNull(actualCourseDto);
         assertEquals(expectedCourseDto, actualCourseDto);
@@ -212,13 +220,13 @@ class StudentServiceImplTest {
         int studentId = 5;
         Course course1 = Course.builder().withCourseId(1).withCourseName("Math").build();
         Course course2 = Course.builder().withCourseId(2).withCourseName("Biology").build();
-        List<Course> courses = new ArrayList<>(Arrays.asList(course1, course2));
+        Set<Course> courses = new HashSet<>(Arrays.asList(course1, course2));
 
         CourseDto courseDto1 = CourseDto.builder().withCourseId(1).withCourseName("Math").build();
         CourseDto courseDto2 = CourseDto.builder().withCourseId(2).withCourseName("Biology").build();
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
-        when(courseDao.getAllStudentCoursesByStudentID(anyInt())).thenReturn(courses);
+        when(studentDao.getAllStudentCoursesByStudentID(anyInt())).thenReturn(courses);
         when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentCoursesByStudentId(studentId);
@@ -226,7 +234,6 @@ class StudentServiceImplTest {
         assertNotNull(actualCourseDto);
         assertEquals(expectedCourseDto, actualCourseDto);
 
-        verify(courseDao).getAllStudentCoursesByStudentID(studentId);
+        verify(studentDao).getAllStudentCoursesByStudentID(studentId);
     }
-    
 }

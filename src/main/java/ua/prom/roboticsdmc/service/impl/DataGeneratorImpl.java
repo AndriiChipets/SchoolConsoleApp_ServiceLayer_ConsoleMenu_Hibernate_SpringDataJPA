@@ -2,8 +2,10 @@ package ua.prom.roboticsdmc.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.domain.Course;
@@ -30,8 +32,7 @@ public class DataGeneratorImpl implements DataGenerator {
 
     @Override
     public List<Student> createRandomStudent(int studentsNumber) {
-        
-        log.trace("Create random " + studentsNumber + " students");
+        log.info("Create random " + studentsNumber + " students");
         List<Student> studentNames = new ArrayList<>();
         Random random = new Random();
 
@@ -42,14 +43,13 @@ public class DataGeneratorImpl implements DataGenerator {
                     .build();
             studentNames.add(student);
         }
-        log.trace("Random " + studentsNumber + " students are created");
+        log.info("Random " + studentsNumber + " students are created");
         return studentNames;
     }
 
     @Override
     public List<Group> createRandomGroup(int groupNumber) {
-
-        log.trace("Create random " + groupNumber + " groups");
+        log.info("Create random " + groupNumber + " groups");
         List<Group> newGroups = new ArrayList<>();
         Random random = new Random();
 
@@ -62,28 +62,27 @@ public class DataGeneratorImpl implements DataGenerator {
             }
             newGroups.add(Group.builder().withGroupName(String.format("%s-%s", lettersBldr, numbersBldr)).build());
         }
-        log.trace("Random " + groupNumber + " groups are created");
+        log.info("Random " + groupNumber + " groups are created");
         return newGroups;
     }
 
     @Override
     public List<Course> createCourse() {
-
-        log.trace("Create list of courses");
+        log.info("Create list of courses");
         List<Course> newCourses = new ArrayList<>();
 
         for (int i = 0; i < COURSE_NAMES.size(); i++) {
             Course course = Course.builder().withCourseName(COURSE_NAMES.get(i)).build();
             newCourses.add(course);
         }
-        log.trace("List of courses are created");
+        log.info("List of courses are created");
         return newCourses;
     }
 
     @Override
     public List<Student> assignStudentToGroup(List<Group> groups, List<Student> students, int minStudentInGroup,
             int maxStudentInGroup) {
-        log.trace("Assign students to groups");
+        log.info("Assign students to groups");
         int studentsQuantity = students.size();
         boolean isFreeStudent = studentsQuantity > 0;
 
@@ -108,33 +107,44 @@ public class DataGeneratorImpl implements DataGenerator {
                 }
             }
         }
-        log.trace("Students are assigned to groups");
+        log.info("Students are assigned to groups");
         return students;
     }
 
     @Override
-    public List<List<Integer>> assignStudentToCourses(List<Student> students, List<Course> courses,
-            int minStudentCourses, int maxStudentCourses) {
-
-        log.trace("Assign students to courses");
-        List<List<Integer>> studentCourses = new ArrayList<>();
-        List<Integer> coursesId = null;
+    public List<Student> assignStudentToCourses(List<Student> students, List<Course> courses, int minStudentCourses,
+            int maxStudentCourses) {
+        log.info("Assign students to courses");
         Random random = new Random();
-
-        for (int i = 1; i <= students.size(); i++) {
+        List<Student> studentsAssignToCourses = new ArrayList<>();
+        List<Course> coursesWithStudents = new ArrayList<>(courses);
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            Set<Course> studentCourses = new HashSet<>();
             int numCourcesPerStudent = random.nextInt(minStudentCourses, maxStudentCourses + 1);
-            coursesId = new ArrayList<>();
             for (int j = 0; j < numCourcesPerStudent; j++) {
-                int randomCourseId = courses.get(random.nextInt(courses.size() - 1)).getCourseId();
-                coursesId.add(randomCourseId);
+                Course course = coursesWithStudents.get(random.nextInt(coursesWithStudents.size()));
+                studentCourses.add(course);
+                int courseIndex = coursesWithStudents.indexOf(course);
+                course.getStudents().add(student);
+                coursesWithStudents.set(courseIndex, course);
             }
-            studentCourses.add(coursesId);
+            Student studentAssignToCourse = Student.builder()
+                    .withUserId(student.getUserId())
+                    .withFirstName(student.getFirstName())
+                    .withLastName(student.getLastName())
+                    .withEmail(student.getEmail())
+                    .withPassword(student.getPassword())
+                    .withGroupId(student.getGroupId())
+                    .withCourses(studentCourses)
+                    .build();
+            studentsAssignToCourses.add(studentAssignToCourse);
         }
-        log.trace("Students are assigned to courses");
-        return studentCourses;
+        log.info("Students are assigned to courses");
+        return studentsAssignToCourses;
     }
 
-    public int setRandomInterval(int min, int max) {
+    private int setRandomInterval(int min, int max) {
         Random random = new Random();
         return random.nextInt(max - min) + min;
     }

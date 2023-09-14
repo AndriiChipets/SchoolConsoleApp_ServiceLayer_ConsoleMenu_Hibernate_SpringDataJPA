@@ -1,12 +1,11 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import java.util.Optional;
-
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.User;
@@ -15,61 +14,41 @@ import ua.prom.roboticsdmc.domain.User;
 @Log4j2
 public class UserDaoImpl extends AbstractCrudDaoImpl<Integer, User> implements UserDao {
 
-    private static final String SAVE_QUERY = "INSERT INTO school_app_schema.users (first_name, last_name, email, password) VALUES (?,?,?,?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.users WHERE user_id=?";
-    private static final String FIND_BY_EMAIL_QUERY = "SELECT * FROM school_app_schema.users WHERE email=?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM school_app_schema.users ORDER BY user_id ASC";
-    private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.users ORDER BY user_id ASC LIMIT ? OFFSET ?";
-    private static final String UPDATE_QUERY = "UPDATE school_app_schema.users SET first_name=?, last_name=?, email=?, password=? WHERE user_id=?";
-    private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.users WHERE user_id=?";
-    private static final String CHECKING_EXISTENCE_TABLES_IN_SCHEMA_QUERY = "SELECT * FROM information_schema.tables where table_schema = 'school_app_schema' and table_type = 'BASE TABLE'";
+    private static final String FIND_BY_ID_QUERY_HQL = "SELECT u FROM User u WHERE u.userId=:id";
+    private static final String FIND_BY_EMAIL_QUERY_HQL = "SELECT u FROM User u WHERE u.email=:email";
+    private static final String FIND_ALL_QUERY_HQL = "SELECT u FROM User u ORDER BY u.userId ASC";
+    private static final String DELETE_BY_ID_QUERY_HQL = "DELETE FROM User u WHERE u.userId=:id";
+    private static final String CHECKING_EXISTENCE_TABLES_IN_SCHEMA_QUERY_SQL = "SELECT * FROM information_schema.tables where table_schema = 'school_app_schema' "
+            + "and table_type = 'BASE TABLE'";
 
-    protected UserDaoImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
-                DELETE_BY_ID_QUERY);
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Override
-    protected RowMapper<User> createRowMapper() {
-        return (rs, rowNum) -> {
-            return User.builder()
-                    .withUserId(rs.getInt("user_id"))
-                    .withFirstName(rs.getString("first_name"))
-                    .withLastName(rs.getString("last_name"))
-                    .withEmail(rs.getString("email"))
-                    .withPassword(rs.getString("password"))
-                    .build();
-        };
-    }
-
-    @Override
-    protected Object[] getEntityPropertiesToSave(User user) {
-        return new Object[] { user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword() };
-    }
-
-    @Override
-    protected Object[] getEntityPropertiesToUpdate(User user) {
-        return new Object[] { user.getFirstName(), user.getLastName(), user.getEmail(), user.getPassword(),
-                user.getUserId() };
+    protected UserDaoImpl() {
+        super(FIND_BY_ID_QUERY_HQL, FIND_ALL_QUERY_HQL, DELETE_BY_ID_QUERY_HQL);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        log.trace("Find user by email = " + email);
+        log.info("Find user by email = " + email);
         User user = null;
         try {
-            user = jdbcTemplate.queryForObject(FIND_BY_EMAIL_QUERY, createRowMapper(), email);
-        } catch (DataAccessException e) {
+            user = entityManager.createQuery(FIND_BY_EMAIL_QUERY_HQL, User.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
+            log.info("get User with email: " + user.getEmail());
+        } catch (NoResultException e) {
             log.warn("User with email = " + email + " is absent");
             return Optional.empty();
         }
-        log.trace("Return user by email = " + email);
+        log.info("Return user by email = " + email);
         return Optional.of(user);
     }
 
     @Override
     public boolean isAnyTableInDbSchema() {
-        log.trace("Check is any table exist in data base schema");
-        return jdbcTemplate.queryForList(CHECKING_EXISTENCE_TABLES_IN_SCHEMA_QUERY).isEmpty();
+        log.info("Check is any table exist in data base schema");
+        return entityManager.createNativeQuery(CHECKING_EXISTENCE_TABLES_IN_SCHEMA_QUERY_SQL)
+                .getResultList().isEmpty();
     }
 }

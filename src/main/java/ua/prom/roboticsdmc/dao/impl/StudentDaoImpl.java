@@ -1,103 +1,118 @@
 package ua.prom.roboticsdmc.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import ua.prom.roboticsdmc.dao.StudentDao;
+import ua.prom.roboticsdmc.domain.Course;
 import ua.prom.roboticsdmc.domain.Student;
 
 @Repository
 @Log4j2
 public class StudentDaoImpl extends AbstractCrudDaoImpl<Integer, Student> implements StudentDao {
 
-    private static final String SAVE_QUERY = "INSERT INTO school_app_schema.users (group_id, first_name, last_name, email, password) VALUES (?,?,?,?,?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM school_app_schema.users WHERE user_id=?";
-    private static final String FIND_ALL_QUERY = "SELECT * FROM school_app_schema.users ORDER BY school_app_schema.users.user_id ASC";
-    private static final String FIND_ALL_PAGINATION_QUERY = "SELECT * FROM school_app_schema.users ORDER BY user_id ASC LIMIT ? OFFSET ?";
-    private static final String UPDATE_QUERY = "UPDATE school_app_schema.users SET group_id=?, first_name=?, last_name=?, email=?, password=? WHERE user_id=?";
-    private static final String DELETE_BY_ID_QUERY = "DELETE FROM school_app_schema.users WHERE user_id=?";
-    private static final String DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY = "UPDATE school_app_schema.users SET group_id=? WHERE user_id=?";
-    private static final String FIND_STUDENTS_BY_COURSE_NAME_QUERY = "SELECT * FROM school_app_schema.users " 
-            + "INNER JOIN school_app_schema.students_courses "
-            + "ON school_app_schema.users.user_id = school_app_schema.students_courses.user_id "
-            + "INNER JOIN school_app_schema.courses "
-            + "ON school_app_schema.students_courses.course_id = school_app_schema.courses.course_id "
-            + "WHERE school_app_schema.courses.course_name = ? "
-            + "ORDER BY school_app_schema.users.user_id ASC";
+    private static final String FIND_BY_ID_QUERY_HQL = "SELECT s FROM Student s WHERE s.userId=:id";
+    private static final String FIND_ALL_QUERY_HQL = "SELECT s FROM Student s ORDER BY s.userId ASC";
+    private static final String DELETE_BY_ID_QUERY_HQL = "DELETE FROM Student s WHERE s.userId=:id";
+    private static final String DISTRIBUTE_STUDENT_TO_GROUP_QUERY_HQL = "UPDATE Student s SET s.groupId=:groupId WHERE s.userId=:id";
+    private static final String CONVERT_USER_TO_STUDENT_SQL = "UPDATE school_app_schema.users SET dtype=? WHERE user_id=?";
+    private static final String FIND_COURSE_BY_ID_QUERY_HQL = "SELECT c FROM Course c WHERE c.courseId=:id";
 
-    public StudentDaoImpl(JdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate, SAVE_QUERY, FIND_BY_ID_QUERY, FIND_ALL_QUERY, FIND_ALL_PAGINATION_QUERY, UPDATE_QUERY,
-                DELETE_BY_ID_QUERY);
-    }
-    
-    @Override
-    protected RowMapper<Student> createRowMapper() {
-        return (rs, rowNum) -> {
-            return Student.builder()
-                    .withUserId(rs.getInt("user_id"))
-                    .withGroupId(rs.getInt("group_id"))
-                    .withFirstName(rs.getString("first_name"))
-                    .withLastName(rs.getString("last_name"))
-                    .withEmail(rs.getString("email"))
-                    .build();
-        };
-    }
-    
-    @Override
-    protected Object[] getEntityPropertiesToSave(Student student) {
-        return new Object[] { 
-                student.getGroupId(),
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEmail(),
-                student.getPassword() };
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    public StudentDaoImpl() {
+        super(FIND_BY_ID_QUERY_HQL, FIND_ALL_QUERY_HQL, DELETE_BY_ID_QUERY_HQL);
     }
 
     @Override
-    protected Object[] getEntityPropertiesToUpdate(Student student) {
-        return new Object[] {
-                student.getGroupId(),
-                student.getFirstName(),
-                student.getLastName(),
-                student.getEmail(),
-                student.getPassword(),
-                student.getUserId() };
-    }
-    
-    protected Object[] getEntityPropertiesToUpdateGroup(Student student) {
-        return new Object[] {
-                student.getGroupId(),
-                student.getUserId() };
-    }
-
-    @Override
-    public List<Student> findStudentsByCourseName(String courseName) {
-        log.trace("Find student by course name = " + courseName);
-        return jdbcTemplate.query(FIND_STUDENTS_BY_COURSE_NAME_QUERY, createRowMapper(), courseName);
-    }
-    
-    @Override
+    @Transactional
     public void distributeStudentsToGroups(List<Student> students) {
-        
-        log.trace("Distribute students to groups");
-        List<Object[]> batch = new ArrayList<>();
-        for (Student student : students) {
-            Object[] values = getEntityPropertiesToUpdateGroup(student);
-            batch.add(values);
+        log.info("Distribute Students to Groups");
+        int batchSize = students.size() - 1;
+        for (int i = 0; i < students.size(); i++) {
+            if (i > 0 && i % batchSize == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+            entityManager.createQuery(DISTRIBUTE_STUDENT_TO_GROUP_QUERY_HQL)
+                    .setParameter("groupId", students.get(i).getGroupId())
+                    .setParameter("id", students.get(i).getUserId())
+                    .executeUpdate();
         }
-        jdbcTemplate.batchUpdate(DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY, batch);
-        log.trace("Students are distributed to groups");
+        log.info("Students distributed to Groups");
+    }
+
+    @Override
+    @Transactional
+    public void addStudentToGroup(Integer groupId, Integer studentId) {
+        log.info("Add student with ID = " + studentId + " to group with ID = " + groupId);
+        convertUserToStudent(studentId);
+        entityManager.createQuery(DISTRIBUTE_STUDENT_TO_GROUP_QUERY_HQL)
+        .setParameter("groupId", groupId)
+        .setParameter("id", studentId)
+        .executeUpdate();
+        log.info("Student with ID = " + studentId + " added to group with ID = " + groupId);
+    }
+
+    @Override
+    @Transactional
+    public void fillRandomStudentCourseTable(List<Student> studentsAssignedToCourses) {
+        int batchSize = studentsAssignedToCourses.size() - 1;
+        log.info("Fill random student to course table");
+        for (int i = 0; i < studentsAssignedToCourses.size(); i++) {
+            if (i > 0 && i % batchSize == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+            entityManager.merge(studentsAssignedToCourses.get(i));
+        }
+        log.info("Random student filled to course table");
     }
     
     @Override
-    public void addStudentToGroup(Integer groupId, Integer studentId) {
-        log.trace("Add student with ID = " + studentId +" to group with ID = " + groupId);
-        jdbcTemplate.update(DISTRIBUTE_STUDENTS_TO_GROUPS_QUERY, groupId, studentId);
-        log.trace("Student with ID = " + studentId +" added to group with ID = " + groupId);
+    @Transactional
+    public void removeStudentFromCourse(Integer studentId, Integer courseId) {
+        log.info("Delete Student with ID = " + studentId + " to Course with ID = " + courseId);
+        Student student = findById(studentId).get();
+        Course course = entityManager.createQuery(FIND_COURSE_BY_ID_QUERY_HQL, Course.class)
+                .setParameter("id", courseId).getSingleResult();
+        student.removeCourse(course);
+        entityManager.persist(student);
+        log.info("Student with ID = " + studentId + " deleted to Course with ID = " + courseId);
+    }
+    
+    @Override
+    @Transactional
+    public void addStudentToCourse(Integer studentId, Integer courseId) {
+        log.info("Add Student with ID = " + studentId + " to Course with ID = " + courseId);
+        convertUserToStudent(studentId);
+        Student student = findById(studentId).get();
+        Course course = entityManager.createQuery(FIND_COURSE_BY_ID_QUERY_HQL, Course.class)
+                .setParameter("id", courseId).getSingleResult();
+        student.addCourse(course);
+        entityManager.persist(student);
+        log.info("Student with ID = " + studentId + " added to Course with ID = " + courseId);
+    }
+    
+    @Override
+    public Set<Course> getAllStudentCoursesByStudentID(Integer studentId) {
+        log.trace("Get all student courses by student ID = " + studentId);
+        return findById(studentId).get().getCourses();
+    }
+    
+    private void convertUserToStudent(Integer userId) {
+        log.info("Convert User to Student");
+        entityManager.createNativeQuery(CONVERT_USER_TO_STUDENT_SQL)
+        .setParameter(1, "Student")
+        .setParameter(2, userId)
+        .executeUpdate();
+        log.info("User converted to Student");
     }
 }

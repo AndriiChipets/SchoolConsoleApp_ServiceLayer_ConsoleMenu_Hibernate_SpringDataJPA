@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS school_app_schema.groups (
 
 -- TABLE: users
 CREATE TABLE IF NOT EXISTS school_app_schema.users (
+    dtype character(50),
     user_id SERIAL PRIMARY KEY,
     group_id int,
     first_name character(30) NOT NULL,

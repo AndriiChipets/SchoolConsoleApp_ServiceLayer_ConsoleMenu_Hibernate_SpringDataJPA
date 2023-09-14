@@ -1,5 +1,7 @@
 package ua.prom.roboticsdmc.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
@@ -22,17 +24,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean login(String email, String password) {
-        log.trace("Check if user with email = " + email + " exists in the data base");
+        log.info("Check if user with email = " + email + " exists in the data base");
         User userToValidate = User.builder()
                 .withEmail(email)
                 .withPassword(password)
                 .build();
-        log.trace("Validate user with email = " + email);
+        log.info("Validate user with email = " + email);
         userValidator.validate(userToValidate);
-        log.trace("user with email = " + email + " validated");
+        log.info("user with email = " + email + " validated");
         String encriptPassword = passwordEncriptor.encript(password);
-        log.trace("Return result is user with email = " + email + " exists");
-        return userDao.findByEmail(email)
+        log.info("Return result is user with email = " + email + " exists");
+        Optional<User> userByEmail = userDao.findByEmail(email);
+        return userByEmail
                 .map(User::getPassword)
                 .filter(pass -> pass.equals(encriptPassword))
                 .isPresent();
@@ -40,15 +43,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserRegistrationRequest registrationRequest) {
-        log.trace("Register new user");
+        log.info("Register new user");
         User userToValidate = User.builder()
                 .withEmail(registrationRequest.getEmail())
                 .withPassword(registrationRequest.getPassword())
                 .build();
-        log.trace("Validate new user");
+        log.info("Validate new user");
         userValidator.validate(userToValidate);
-        log.trace("New user is validated");
-        log.trace("Check if user exists in the data base");
+        log.info("New user is validated");
+        log.info("Check if user exists in the data base");
         if (userDao.findByEmail(registrationRequest.getEmail()).isPresent()) {
             log.warn("User is already registred");
             throw new RegisterException("User is already registred");
@@ -60,8 +63,8 @@ public class UserServiceImpl implements UserService {
                 .withFirstName(registrationRequest.getFirstName())
                 .withLastName(registrationRequest.getLastName())
                 .build();
-        log.trace("Add new user to the data base");
+        log.info("Add new user to the data base");
         userDao.save(userWithEncriptPassword);
-        log.trace("New user added to the data base");
+        log.info("New user added to the data base");
     }
 }

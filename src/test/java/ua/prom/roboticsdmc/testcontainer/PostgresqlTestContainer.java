@@ -1,4 +1,5 @@
 package ua.prom.roboticsdmc.testcontainer;
+
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class PostgresqlTestContainer extends PostgreSQLContainer<PostgresqlTestContainer> {

@@ -93,7 +93,7 @@ class FrontControllerTest {
                                  .build()));
 
         when(viewProvider.readInt()).thenReturn(2).thenReturn(0);
-        when(studentService.findAllStudentsCources()).thenReturn(courses);
+        when(studentService.findAllCources()).thenReturn(courses);
         when(viewProvider.read()).thenReturn(courseName);
         when(studentService.findAllStudentsRelatedToCourseWithGivenName(anyString())).thenReturn(courseStudents);
         frontController.run();
@@ -122,7 +122,7 @@ class FrontControllerTest {
         when(viewProvider.read()).thenReturn(email).thenReturn(password);
         when(userService.login(anyString(), anyString())).thenReturn(true);
         when(viewProvider.readInt()).thenReturn(3).thenReturn(courseId).thenReturn(studentId).thenReturn(0);
-        when(studentService.findAllStudentsCources()).thenReturn(courses);
+        when(studentService.findAllCources()).thenReturn(courses);
         frontController.run();
 
         verify(studentService).addStudentToCourse(studentId, courseId);

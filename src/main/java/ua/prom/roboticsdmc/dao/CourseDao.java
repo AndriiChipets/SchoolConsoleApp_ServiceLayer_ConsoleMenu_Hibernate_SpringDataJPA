@@ -1,16 +1,15 @@
 package ua.prom.roboticsdmc.dao;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import ua.prom.roboticsdmc.domain.Course;
+import ua.prom.roboticsdmc.domain.Student;
 
 public interface CourseDao extends CrudDao<Integer, Course> {
 
-    List<Course> getAllStudentCoursesByStudentID(Integer studentId);
+    Optional<Course> findCourseByCourseName(String courseName);
+    
+    Set<Student> findStudentsByCourseName(String courseName);
 
-    void addStudentToCourse(Integer studentId, Integer courseId);
-
-    void removeStudentFromCourse(Integer studentId, Integer courseId);
-
-    void fillRandomStudentCourseTable(List<List<Integer>> studentCourses);
 }

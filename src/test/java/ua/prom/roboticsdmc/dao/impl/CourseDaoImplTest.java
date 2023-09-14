@@ -1,21 +1,22 @@
 package ua.prom.roboticsdmc.dao.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.ClassRule;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -24,10 +25,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
 import ua.prom.roboticsdmc.dao.CourseDao;
 import ua.prom.roboticsdmc.domain.Course;
+import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @ActiveProfiles("test")
-@JdbcTest
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+        CourseDaoImpl.class }))
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
@@ -46,13 +49,7 @@ class CourseDaoImplTest {
     public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
     CourseDao courseDao;
-
-    @BeforeEach
-    void setUp() {
-        courseDao = new CourseDaoImpl(jdbcTemplate);
-    }
 
     @Test
     @DisplayName("save method should add Course to the table")
@@ -229,83 +226,98 @@ class CourseDaoImplTest {
 
         assertEquals(Optional.empty(), courseDao.findById(courseId));
     }
-
+    
     @Test
-    @DisplayName("getAllStudentCoursesByStudentID method should list of Courses from the table")
-    void getAllStudentCoursesByStudentID_shouldReturnListOfCourseRelatedToStudent_whenThereAreAnyCoursesRelatedWithEnteredCourseId() {
+    @DisplayName("findStudentsByCourseName method should return List of Students")
+    void findStudentsByCourseName_shouldReturnListOfStudentsRelatedToCourse_whenThereAreAnyStudentsRelatedToEnteredCourseName() {
 
-        int studentId = 1;
-        List<Course> expectedCourses = new ArrayList<Course>(Arrays.asList(
+        String courseName = "Biology";
+        
+        Set<Course> userId3Courses = new HashSet<>(Arrays.asList(
+                Course.builder().withCourseId(2).withCourseName("Biology").build(),
+                Course.builder().withCourseId(4).withCourseName("Literature").build(),
+                Course.builder().withCourseId(5).withCourseName("English").build()));
+        Set<Course> userId4Courses = new HashSet<>(Arrays.asList(
+                Course.builder().withCourseId(2).withCourseName("Biology").build()));
+        Set<Course> userId6Courses = new HashSet<>(Arrays.asList(
+                Course.builder().withCourseId(2).withCourseName("Biology").build(),
+                Course.builder().withCourseId(3).withCourseName("Philosophy").build()));
+        Set<Course> userId7Courses = new HashSet<>(Arrays.asList(
+                Course.builder().withCourseId(2).withCourseName("Biology").build()));
+        Set<Course> userId9Courses = new HashSet<>(Arrays.asList(
+                Course.builder().withCourseId(2).withCourseName("Biology").build(),
+                Course.builder().withCourseId(4).withCourseName("Literature").build()));
+
+        Set<Student> expectedStudents = new HashSet<>(Arrays.asList(
+                Student.builder()
+                .withUserId(3)
+                .withGroupId(2)
+                .withFirstName("Patricia")
+                .withLastName("Garcia")
+                .withEmail("patricia.garcia@gmail.com")
+                .withPassword("patricia1234")
+                .withCourses(userId3Courses)
+                .build(),
+                Student.builder()
+                .withUserId(4)
+                .withGroupId(4)
+                .withFirstName("Patricia")
+                .withLastName("Jackson")
+                .withEmail("patricia.jackson@gmail.com")
+                .withPassword("patricia2345")
+                .withCourses(userId4Courses)
+                .build(),
+                Student.builder()
+                .withUserId(6)
+                .withGroupId(4)
+                .withFirstName("James")
+                .withLastName("Williams")
+                .withEmail("james.williams@gmail.com")
+                .withPassword("james1234")
+                .withCourses(userId6Courses)
+                .build(),
+                Student.builder()
+                .withUserId(7)
+                .withGroupId(2)
+                .withFirstName("Robert")
+                .withLastName("Rodriguez")
+                .withEmail("robert.rodriguez@gmail.com")
+                .withPassword("robert1234")
+                .withCourses(userId7Courses)
+                .build(),
+                Student.builder()
+                .withUserId(9)
+                .withGroupId(5)
+                .withFirstName("Karen")
+                .withLastName("Garcia")
+                .withEmail("karen.garcia@gmail.com")
+                .withPassword("karen1234")
+                .withCourses(userId9Courses)
+                .build())); 
+
+        assertEquals(expectedStudents, courseDao.findStudentsByCourseName(courseName));
+    }
+    
+    @Test
+    @DisplayName("findCourseByCourseName method should return Course from the table if Course with given name exists")
+    void findCourseByCourseName_shouldReturnCourse_whenThereIsSomeCourseInTableWithEnteredCourseName() {
+
+        String courseName = "Math";
+        Optional<Course> expectedCourse = Optional.of(
                 Course.builder()
                 .withCourseId(1)
                 .withCourseName("Math")
-                .build(),
-                Course.builder()
-                .withCourseId(3)
-                .withCourseName("Philosophy")
-                .build()));
+                .build());
 
-        assertEquals(expectedCourses, courseDao.getAllStudentCoursesByStudentID(studentId));
+        assertEquals(expectedCourse, courseDao.findCourseByCourseName(courseName));
     }
 
     @Test
-    @DisplayName("addStudentToCourse method should add Student to Course")
-    void addStudentToCourse_shouldAddStudentToCourse_whenEnteredDataIsCorrect() {
+    @DisplayName("findCourseByCourseName method should return empty Optional if Course doesn't exist")
+    void findCourseByCourseName_shouldReturnEmptyOptional_whenThereIsNotAnyCourseInTableWithEnteredCourseName() {
 
-        int studentId = 2;
-        int courseId = 5;
-        List<Course> expectedCourse = null;
+        String courseName = "Wrong name";
 
-        courseDao.addStudentToCourse(studentId, courseId);
-        expectedCourse = courseDao.getAllStudentCoursesByStudentID(studentId);
-
-        assertTrue(expectedCourse.stream().anyMatch(course -> course.getCourseId() == courseId));
-    }
-
-    @Test
-    @DisplayName("removeStudentFromCourse method should deleteStudent from Course")
-    void removeStudentFromCourse_shoulRemoveStudentFromCourse_whenEnteredDataIsCorrect() {
-
-        int studentId = 1;
-        int courseId = 1;
-
-        courseDao.removeStudentFromCourse(studentId, courseId);
-        List<Course> expectedCourse = courseDao.getAllStudentCoursesByStudentID(studentId);
-
-        assertTrue(expectedCourse.stream().noneMatch(course -> course.getCourseId() == courseId));
-    }
-    
-    @Test
-    @DisplayName("fillRandomStudentCourseTable method should distribute Students to Courses ")
-    void fillRandomStudentCourseTable_shouldDistributeAllStudentsToAllCourses_whenEnteredDataIsCorrect() {
-
-        List<List<Integer>> studentIdCoursesIdAdded = new ArrayList<>(Arrays.asList(
-                new ArrayList<>(Arrays.asList(1, 3)),
-                new ArrayList<>(Arrays.asList(3, 6)),
-                new ArrayList<>(Arrays.asList(4, 5)),
-                new ArrayList<>(Arrays.asList(2)),
-                new ArrayList<>(Arrays.asList(4)),
-                new ArrayList<>(Arrays.asList(2,3)),
-                new ArrayList<>(Arrays.asList(2)),
-                new ArrayList<>(Arrays.asList(4)),
-                new ArrayList<>(Arrays.asList(2, 4))));
-        List<List<Integer>> studentIdCoursesIdExpected = new ArrayList<>();
-        
-        cleanStudentCourseTable();
-        courseDao.fillRandomStudentCourseTable(studentIdCoursesIdAdded);
-        
-        for (int i = 0; i < studentIdCoursesIdAdded.size(); i++) {
-            List <Course> сourses = (courseDao.getAllStudentCoursesByStudentID(i+1));
-
-            List<Integer> courseIds = сourses.stream()
-                                             .map(course -> course.getCourseId())
-                                             .toList();
-            studentIdCoursesIdExpected.add(courseIds);
-        }
-        assertEquals(studentIdCoursesIdExpected, studentIdCoursesIdAdded);
-    }
-    
-    private void cleanStudentCourseTable() {
-        jdbcTemplate.update("DELETE FROM school_app_schema.students_courses");
+        assertEquals(Optional.empty(), courseDao.findCourseByCourseName(courseName));
     }
 }

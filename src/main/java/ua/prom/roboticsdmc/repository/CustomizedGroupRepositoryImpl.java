@@ -28,7 +28,7 @@ public class CustomizedGroupRepositoryImpl implements CustomizedGroupRepository 
         @SuppressWarnings("unchecked")
         List<Object[]> results = entityManager.createQuery(FIND_GROUP_WITH_STUDENT_QUANTITY_QUERY)
                 .setParameter("quantity", studentQuantity).getResultList();
-        results.stream().forEach((r) -> {
+        results.stream().forEach(r -> {
             Integer groupId = (Integer) r[0];
             String groupName = (String) r[1];
             Group group = Group.builder()

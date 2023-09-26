@@ -28,17 +28,13 @@ public class TableCreatorImpl implements TableCreator {
 
     @Override
     public void createTables(String schemaFilePath) {
-        log.info("Create connection");
+        log.info("Create tables");
         EntityManagerFactoryInfo info = (EntityManagerFactoryInfo) entityManager.getEntityManagerFactory();
         try (Connection connection = info.getDataSource().getConnection()) {
-            log.info("Connection created");
-            log.info("Create scriptRunner");
             ScriptRunner scriptRunner = new ScriptRunner(connection);
-            log.info("ScriptRunner created");
-            log.info("Create reader to execute script");
             try (Reader reader = new BufferedReader(new FileReader(schemaFilePath))) {
                 scriptRunner.runScript(reader);
-                log.info("Reader created, script executed");
+                log.info("Tables created");
             }
         } catch (SQLException | IOException e) {
             log.error("Schema and tables are not created.. " + e);

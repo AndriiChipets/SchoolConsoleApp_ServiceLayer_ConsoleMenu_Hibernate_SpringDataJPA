@@ -5,6 +5,7 @@ import org.mapstruct.factory.Mappers;
 
 import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.dto.StudentDto;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface StudentMapperStruct {
@@ -13,6 +14,7 @@ public interface StudentMapperStruct {
 
     StudentDto mapStudentToStudentDto(Student student);
 
+    @Mapping(target = "courses", ignore = true)
     Student mapStudentDtoToStudent(StudentDto studentDto);
 
 }

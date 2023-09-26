@@ -41,7 +41,6 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<GroupDto> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity) {
-        log.info("Find all Groups with less or equals Student count = " + studentQuantity);
         return groupRepository.findGroupWithLessOrEqualsStudentQuantity(studentQuantity)
                 .stream()
                 .map(groupMapperStruct::mapGroupToGroupDto)
@@ -89,8 +88,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId) {
-        return studentRepository.findById(studentId).get()
+    public List<CourseDto> findAllStudentCoursesByStudentId(Integer userId) {
+        log.info("Find all Student Courses by Id = " + userId);
+        return studentRepository.findById(userId).get()
                 .getCourses()
                 .stream()
                 .map(courseMapperStruct::mapCourseToCourseDto)

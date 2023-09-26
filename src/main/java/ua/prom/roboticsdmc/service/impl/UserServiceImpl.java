@@ -29,9 +29,7 @@ public class UserServiceImpl implements UserService {
                 .withEmail(email)
                 .withPassword(password)
                 .build();
-        log.info("Validate user with email = " + email);
         userValidator.validate(userToValidate);
-        log.info("user with email = " + email + " validated");
         String encriptPassword = passwordEncriptor.encript(password);
         log.info("Return result is user with email = " + email + " exists");
         Optional<User> userByEmail = userRepository.findByEmail(email);
@@ -48,9 +46,7 @@ public class UserServiceImpl implements UserService {
                 .withEmail(registrationRequest.getEmail())
                 .withPassword(registrationRequest.getPassword())
                 .build();
-        log.info("Validate new user");
         userValidator.validate(userToValidate);
-        log.info("New user is validated");
         log.info("Check if user exists in the data base");
         if (userRepository.findByEmail(registrationRequest.getEmail()).isPresent()) {
             log.warn("User is already registred");

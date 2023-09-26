@@ -9,6 +9,7 @@ import ua.prom.roboticsdmc.domain.User;
 @Log4j2
 @ua.prom.roboticsdmc.anotation.Validator
 public class UserValidator implements Validator<User> {
+    
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_!#$%&*+/=?`{}~^.-]+@[a-zA-Z0-9.-]+$");
     private static final Pattern PASSWORD_PATTERN = Pattern
             .compile("((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})");

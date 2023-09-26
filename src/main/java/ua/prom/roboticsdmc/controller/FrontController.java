@@ -27,6 +27,7 @@ public class FrontController {
             + "7 -> Add student to group \n"
             + "0 -> To exit from the program \n";
    private static final String WRONG_CHOICE_MESSAGE = "Please, make right choice from the list or enter \"0\" to exit from the program";
+   
    private final StudentService studentService;
    private final UserService userService;
    private final ViewProvider viewProvider;

@@ -18,6 +18,7 @@ import ua.prom.roboticsdmc.service.TableCreator;
 public class ApplicationRunnerTableCreator implements ApplicationRunner {
 
     private static final String SCHEMA_FILE_PATH = "src/main/resources/sgl/schema.sql";
+    
     private final FrontController frontController;
     private final TableCreator tableCreator;
     private final TableFiller tableFiller;

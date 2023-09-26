@@ -19,16 +19,17 @@ import ua.prom.roboticsdmc.service.DataGenerator;
 @Log4j2
 public class TableFiller {
 
-    private final DataGenerator dataGenerator;
-    private final StudentRepository studentRepository;
-    private final CourseRepository courseRepository;
-    private final GroupRepository groupRepository;
     private static final int TOTAL_STUDENT_NUMBER = 200;
     private static final int TOTAL_GROUP_NUMBER = 10;
     private static final int MIN_NUMBER_STUDENTS_IN_GROUP = 10;
     private static final int MAX_NUMBER_STUDENTS_IN_GROUP = 30;
     private static final int MIN_NUMBER_COURCES_FOR_STUDENT = 1;
     private static final int MAX_NUMBER_COURCES_FOR_STUDENT = 3;
+    
+    private final DataGenerator dataGenerator;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
 
     protected void fillData() {
         log.info("Fill data to the tables");

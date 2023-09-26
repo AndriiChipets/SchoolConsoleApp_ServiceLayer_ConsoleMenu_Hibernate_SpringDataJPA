@@ -107,7 +107,7 @@ class FrontControllerTest {
 
         String email = "test@gmail.com";
         String password = "12@Ab34";
-        int studentId = 10;
+        int userId = 10;
         int courseId = 1;
         List<CourseDto> courses = new ArrayList<>(Arrays.asList(
                 CourseDto.builder()
@@ -121,11 +121,11 @@ class FrontControllerTest {
 
         when(viewProvider.read()).thenReturn(email).thenReturn(password);
         when(userService.login(anyString(), anyString())).thenReturn(true);
-        when(viewProvider.readInt()).thenReturn(3).thenReturn(courseId).thenReturn(studentId).thenReturn(0);
+        when(viewProvider.readInt()).thenReturn(3).thenReturn(courseId).thenReturn(userId).thenReturn(0);
         when(studentService.findAllCources()).thenReturn(courses);
         frontController.run();
 
-        verify(studentService).addStudentToCourse(studentId, courseId);
+        verify(studentService).addStudentToCourse(userId, courseId);
     }
 
     @Test
@@ -134,7 +134,7 @@ class FrontControllerTest {
 
         String email = "test@gmail.com";
         String password = "12@Ab34";
-        int studentId = 10;
+        int userId = 10;
         int courseId = 1;
         List<CourseDto> courses = new ArrayList<>(Arrays.asList(
                 CourseDto.builder()
@@ -148,11 +148,11 @@ class FrontControllerTest {
 
         when(viewProvider.read()).thenReturn(email).thenReturn(password);
         when(userService.login(anyString(), anyString())).thenReturn(true);
-        when(viewProvider.readInt()).thenReturn(4).thenReturn(studentId).thenReturn(courseId).thenReturn(0);
+        when(viewProvider.readInt()).thenReturn(4).thenReturn(userId).thenReturn(courseId).thenReturn(0);
         when(studentService.findAllStudentCoursesByStudentId(anyInt())).thenReturn(courses);
         frontController.run();
 
-        verify(studentService).removeStudentFromOneOfTheirCourses(studentId, courseId);
+        verify(studentService).removeStudentFromOneOfTheirCourses(userId, courseId);
     }
 
     @Test
@@ -225,7 +225,7 @@ class FrontControllerTest {
         when(viewProvider.readInt()).thenReturn(6).thenReturn(userId).thenReturn(0);
         frontController.run();
         
-        verify(studentService, times(1)).deleteUserByUser_Id(userId);
+        verify(studentService, times(1)).deleteUserById(userId);
     }
     
     @Test
@@ -242,7 +242,7 @@ class FrontControllerTest {
         when(viewProvider.readInt()).thenReturn(7).thenReturn(userId).thenReturn(groupId).thenReturn(0);
         frontController.run();
 
-        verify(studentService).addStudentToGroup(groupId, userId);
+        verify(studentService).addStudentToGroup(userId, groupId);
     }
 
     @Test

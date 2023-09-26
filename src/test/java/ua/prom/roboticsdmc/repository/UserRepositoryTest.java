@@ -1,4 +1,4 @@
-package ua.prom.roboticsdmc.dao.impl;
+package ua.prom.roboticsdmc.repository;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,19 +16,22 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import ua.prom.roboticsdmc.config.SchoolApplicationConfig;
-import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.User;
 import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
 
 @ActiveProfiles("test")
 @DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
-        UserDaoImpl.class }))
+        UserRepository.class }))
 @ContextConfiguration(classes=SchoolApplicationConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Sql(
@@ -40,14 +43,14 @@ import ua.prom.roboticsdmc.testcontainer.PostgresqlTestContainer;
                 "/sql/dataStudentCourse.sql" }, 
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD
 )
-@DisplayName("UserDaoImplTest")
-class UserDaoImplTest {
+@DisplayName("UserRepositoryTest")
+class UserRepositoryTest {
     
     @ClassRule
     public static PostgreSQLContainer<?> postgreSQLContainer = PostgresqlTestContainer.getInstance();
 
     @Autowired
-    UserDao userDao;
+    UserRepository userRepository;
 
     @Test
     @DisplayName("save method should add User to the table")
@@ -72,9 +75,9 @@ class UserDaoImplTest {
                 .withEmail(email)
                 .build());
 
-        userDao.save(addedUser);
+        userRepository.save(addedUser);
 
-        assertEquals(expectedUser, userDao.findById(expectedUserId));
+        assertEquals(expectedUser, userRepository.findById(expectedUserId));
     }
 
     @Test
@@ -173,8 +176,8 @@ class UserDaoImplTest {
                 .withPassword("patricia1234")
                 .build()));
 
-        userDao.saveAll(addedUsers);
-        assertEquals(expectedUsers, userDao.findAll());
+        userRepository.saveAll(addedUsers);
+        assertEquals(expectedUsers, userRepository.findAll());
     }
 
     @Test
@@ -191,7 +194,7 @@ class UserDaoImplTest {
                 .withPassword("michael1234")
                 .build());
 
-        assertEquals(expectedUser, userDao.findById(userId));
+        assertEquals(expectedUser, userRepository.findById(userId));
     }
 
     @Test
@@ -200,7 +203,7 @@ class UserDaoImplTest {
 
         int userId = 100;
 
-        assertEquals(Optional.empty(), userDao.findById(userId));
+        assertEquals(Optional.empty(), userRepository.findById(userId));
     }
 
     @Test
@@ -272,15 +275,17 @@ class UserDaoImplTest {
                 .withPassword("karen1234")
                 .build()));
 
-        assertEquals(expectedUsers, userDao.findAll());
+        assertEquals(expectedUsers, userRepository.findAll());
     }
 
     @Test
     @DisplayName("findAll method with pagination should return Users with defined offset and limit")
     void findAll_withPaginationShouldReturnDefinedListOfUsers_whenThereAreUsersInTableWithOffsetAndLimit() {
 
-        int rowOffset = 2;
-        int rowLimit = 2;
+        int pageNumber = 1;
+        int userOnPage = 2;
+        Pageable pegination = PageRequest.of(pageNumber, userOnPage, Sort.by("userId"));
+        
         List<User> expectedUsers = new ArrayList<User>(Arrays.asList(
                 User.builder()
                 .withUserId(3)
@@ -296,35 +301,38 @@ class UserDaoImplTest {
                 .withEmail("patricia.jackson@gmail.com")
                 .withPassword("patricia2345")
                 .build()));
+        
+        Page <User> userPage = userRepository.findAll(pegination);
+        List<User> actualUsers = userPage.getContent();
 
-        assertEquals(expectedUsers, userDao.findAll(rowOffset, rowLimit));
+        assertEquals(expectedUsers, actualUsers);
     }
 
     @Test
     @DisplayName("update method should update User in the table")
     void update_shouldUpdateUserInTable_whenEnteredDataIsCorrect() {
 
-        int studentId = 3;
+        int userId = 3;
         String firstName = "James";
         String lastName = "Garcia";
         String email = "james.garcia@gmail.com";
         User updatedUser = User.builder()
-                .withUserId(studentId)
+                .withUserId(userId)
                 .withFirstName(firstName)
                 .withLastName(lastName)
                 .withEmail(email)
                 .build();
         Optional<User> expectedUser = Optional.of(
                 User.builder()
-                .withUserId(studentId)
+                .withUserId(userId)
                 .withFirstName(firstName)
                 .withLastName(lastName)
                 .withEmail(email)
                 .build());
 
-        userDao.update(updatedUser);
+        userRepository.save(updatedUser);
 
-        assertEquals(expectedUser, userDao.findById(studentId));
+        assertEquals(expectedUser, userRepository.findById(userId));
     }
 
     @Test
@@ -333,9 +341,9 @@ class UserDaoImplTest {
 
         int userId = 1;
 
-        userDao.deleteById(userId);
+        userRepository.deleteById(userId);
 
-        assertEquals(Optional.empty(), userDao.findById(userId));
+        assertEquals(Optional.empty(), userRepository.findById(userId));
     }
     
     @Test
@@ -344,7 +352,7 @@ class UserDaoImplTest {
 
         String expectedEmail = "michael.thomas@gmail.com";
 
-        assertEquals(expectedEmail, userDao.findByEmail(expectedEmail).get().getEmail());
+        assertEquals(expectedEmail, userRepository.findByEmail(expectedEmail).get().getEmail());
     }
     
     @Test
@@ -353,13 +361,13 @@ class UserDaoImplTest {
 
         String email = "notexisting.email@gmail.com";
 
-        assertEquals(Optional.empty(), userDao.findByEmail(email));
+        assertEquals(Optional.empty(), userRepository.findByEmail(email));
     }
     
     @Test
     @DisplayName("isAnyTableInDbSchema method should return True when there is table in data base schema")
     void isAnyTableInDbSchema_shouldReturnTrue_whenThereIsTableInDataBaseSchema() {
 
-        assertFalse(userDao.isAnyTableInDbSchema());
+        assertFalse(userRepository.isAnyTableInDbSchema());
     }
 }

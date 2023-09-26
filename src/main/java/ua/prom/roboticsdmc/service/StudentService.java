@@ -12,16 +12,16 @@ public interface StudentService {
 
     List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName);
 
-    void deleteUserByUser_Id(Integer studentId);
+    void deleteUserById(Integer userId);
 
-    void addStudentToCourse(Integer studentId, Integer courseId);
+    void addStudentToCourse(Integer userId, Integer courseId);
 
-    void removeStudentFromOneOfTheirCourses(Integer studentId, Integer courseId);
+    void removeStudentFromOneOfTheirCourses(Integer userId, Integer courseId);
 
     List<CourseDto> findAllCources();
 
-    List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId);
+    List<CourseDto> findAllStudentCoursesByStudentId(Integer userId);
 
-    void addStudentToGroup(Integer groupId, Integer studentId);
+    void addStudentToGroup(Integer userId, Integer groupId);
 
 }

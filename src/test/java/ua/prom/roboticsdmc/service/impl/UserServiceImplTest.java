@@ -16,9 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.User;
 import ua.prom.roboticsdmc.domain.UserRegistrationRequest;
+import ua.prom.roboticsdmc.repository.UserRepository;
 import ua.prom.roboticsdmc.service.exception.RegisterException;
 import ua.prom.roboticsdmc.service.validator.Validator;
 
@@ -27,7 +27,7 @@ import ua.prom.roboticsdmc.service.validator.Validator;
 class UserServiceImplTest {
 
     @MockBean
-    UserDao userDao;
+    UserRepository userRepository;
     
     @MockBean
     PasswordEncriptor passwordEncriptor;
@@ -55,7 +55,7 @@ class UserServiceImplTest {
                 .build();
 
         when(passwordEncriptor.encript(anyString())).thenReturn(encriptPassword);
-        when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         
         User userWithEncriptPassword = User.builder()
                 .withEmail(registrationRequest.getEmail())
@@ -66,7 +66,7 @@ class UserServiceImplTest {
         
         userServiceImpl.register(registrationRequest);
 
-        verify(userDao).save(userWithEncriptPassword);
+        verify(userRepository).save(userWithEncriptPassword);
     }
     
     @Test
@@ -92,7 +92,7 @@ class UserServiceImplTest {
                 .build();
         
         when(passwordEncriptor.encript(anyString())).thenReturn(encriptPassword);
-        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
         
         Exception exception = assertThrows(RegisterException.class,
                 () -> userServiceImpl.register(registrationRequest));
@@ -106,11 +106,11 @@ class UserServiceImplTest {
         String email = "patricia.jackson@gmail.com";
         String password = "12aBcd@1";
         
-        when(userDao.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         
         assertFalse(userServiceImpl.login(email, password));
         
-        verify(userDao).findByEmail(email);
+        verify(userRepository).findByEmail(email);
     }
     
     @Test
@@ -130,10 +130,10 @@ class UserServiceImplTest {
                 .build();
 
         when(passwordEncriptor.encript(anyString())).thenReturn(encriptPassword);
-        when(userDao.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(userWithEncriptPassword));
 
         assertTrue(userServiceImpl.login(email, password));
         
-        verify(userDao).findByEmail(email);
+        verify(userRepository).findByEmail(email);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -16,6 +17,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.log4j.Log4j2;
 
 @Configuration
+@EnableJpaRepositories(basePackages = "ua.prom.roboticsdmc.repository", repositoryImplementationPostfix = "Impl")
 @ComponentScan(basePackages = "ua.prom.roboticsdmc")
 @PropertySource("database.properties")
 @Log4j2

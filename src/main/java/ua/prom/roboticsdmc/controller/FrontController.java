@@ -136,7 +136,7 @@ public class FrontController {
     private void deleteUserById() {
         viewProvider.printMessage("Enter student ID: ");
         int userId = viewProvider.readInt();
-        studentService.deleteUserByUser_Id(userId);
+        studentService.deleteUserById(userId);
     }
 
     private void findAllCourses() {
@@ -146,9 +146,9 @@ public class FrontController {
     
     private void addStudentToGroup() {
         viewProvider.printMessage("Enter student ID: ");
-        int studentId = viewProvider.readInt();
+        int userId = viewProvider.readInt();
         viewProvider.printMessage("Enter group ID: ");
         int groupId = viewProvider.readInt();
-        studentService.addStudentToGroup(groupId, studentId);
+        studentService.addStudentToGroup(userId, groupId);
     }
 }

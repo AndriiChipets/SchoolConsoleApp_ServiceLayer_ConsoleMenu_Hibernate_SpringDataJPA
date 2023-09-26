@@ -8,16 +8,18 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import ua.prom.roboticsdmc.dao.CourseDao;
-import ua.prom.roboticsdmc.dao.GroupDao;
-import ua.prom.roboticsdmc.dao.StudentDao;
-import ua.prom.roboticsdmc.dao.UserDao;
+import ua.prom.roboticsdmc.domain.Course;
+import ua.prom.roboticsdmc.domain.Student;
 import ua.prom.roboticsdmc.dto.CourseDto;
 import ua.prom.roboticsdmc.dto.GroupDto;
 import ua.prom.roboticsdmc.dto.StudentDto;
 import ua.prom.roboticsdmc.mapper.CourseMapperStruct;
 import ua.prom.roboticsdmc.mapper.GroupMapperStruct;
 import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
+import ua.prom.roboticsdmc.repository.CourseRepository;
+import ua.prom.roboticsdmc.repository.GroupRepository;
+import ua.prom.roboticsdmc.repository.StudentRepository;
+import ua.prom.roboticsdmc.repository.UserRepository;
 import ua.prom.roboticsdmc.service.StudentService;
 
 @Service
@@ -25,10 +27,10 @@ import ua.prom.roboticsdmc.service.StudentService;
 @Log4j2
 public class StudentServiceImpl implements StudentService {
 
-    private final StudentDao studentDao;
-    private final GroupDao groupDao;
-    private final CourseDao courseDao;
-    private final UserDao userDao;
+    private final StudentRepository studentRepository;
+    private final CourseRepository courseRepository;
+    private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
     
     @Autowired
     GroupMapperStruct groupMapperStruct = GroupMapperStruct.INSTANCE;
@@ -40,7 +42,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<GroupDto> findAllGroupsWithLessOrEqualsStudentCount(Integer studentQuantity) {
         log.info("Find all Groups with less or equals Student count = " + studentQuantity);
-        return groupDao.findGroupWithLessOrEqualsStudentQuantity(studentQuantity)
+        return groupRepository.findGroupWithLessOrEqualsStudentQuantity(studentQuantity)
                 .stream()
                 .map(groupMapperStruct::mapGroupToGroupDto)
                 .toList();
@@ -48,33 +50,38 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDto> findAllStudentsRelatedToCourseWithGivenName(String courseName) {
-        return courseDao.findStudentsByCourseName(courseName)
+        return courseRepository.findCourseByCourseName(courseName).get()
+                .getStudents()
                 .stream().map(studentMapperStruct::mapStudentToStudentDto)
                 .sorted(Comparator.comparingInt(StudentDto::getUserId))
                 .toList();
     }
 
     @Override
-    public void deleteUserByUser_Id(Integer studentId) {
-        log.info("Delete User with user ID = " + studentId);
-        userDao.deleteById(studentId);
-        log.info("User with user ID = " + studentId + "deleted");
+    public void deleteUserById(Integer usertId) {
+        log.info("Delete User with user ID = " + usertId);
+        userRepository.deleteById(usertId);
+        log.info("User with user ID = " + usertId + "deleted");
     }
 
     @Override
-    public void addStudentToCourse(Integer studentId, Integer courseId) {
-        studentDao.addStudentToCourse(studentId, courseId);
+    public void addStudentToCourse(Integer usertId, Integer courseId) {
+        Student student = studentRepository.findById(usertId).get();
+        Course course = courseRepository.findById(courseId).get();
+        studentRepository.addStudentToCourse(student, course);
     }
 
     @Override
     public void removeStudentFromOneOfTheirCourses(Integer studentId, Integer courseId) {
-        studentDao.removeStudentFromCourse(studentId, courseId);  
+        Student student = studentRepository.findById(studentId).get();
+        Course course = courseRepository.findById(courseId).get();
+        studentRepository.removeStudentFromCourse(student, course);  
     }
 
     @Override
     public List<CourseDto> findAllCources() {
         log.info("Find all Courses");
-        return courseDao.findAll()
+        return courseRepository.findAll()
                 .stream()
                 .map(courseMapperStruct::mapCourseToCourseDto)
                 .sorted(Comparator.comparingInt(CourseDto::getCourseId))
@@ -83,7 +90,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<CourseDto> findAllStudentCoursesByStudentId(Integer studentId) {
-        return studentDao.getAllStudentCoursesByStudentID(studentId)
+        return studentRepository.findById(studentId).get()
+                .getCourses()
                 .stream()
                 .map(courseMapperStruct::mapCourseToCourseDto)
                 .sorted(Comparator.comparingInt(CourseDto::getCourseId))
@@ -91,9 +99,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void addStudentToGroup(Integer groupId, Integer studentId) {
-        log.info("Add Student with Student ID = " + studentId + "to Group with Group ID = " + groupId);
-        studentDao.addStudentToGroup(groupId, studentId);
+    public void addStudentToGroup(Integer userId, Integer groupId) {
+        log.info("Add Student with Student ID = " + userId + " to Group with Group ID = " + groupId);
+        Student student = Student.builder().withUserId(userId).withGroupId(groupId).build();
+        studentRepository.addStudentToGroup(student);
         log.info("Student added to Group");
     }
+    
 }

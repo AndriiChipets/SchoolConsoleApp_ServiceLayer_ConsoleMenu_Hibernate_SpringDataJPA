@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
@@ -21,10 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
-import ua.prom.roboticsdmc.dao.CourseDao;
-import ua.prom.roboticsdmc.dao.GroupDao;
-import ua.prom.roboticsdmc.dao.StudentDao;
-import ua.prom.roboticsdmc.dao.UserDao;
 import ua.prom.roboticsdmc.domain.Course;
 import ua.prom.roboticsdmc.domain.Group;
 import ua.prom.roboticsdmc.domain.Student;
@@ -34,6 +32,10 @@ import ua.prom.roboticsdmc.dto.StudentDto;
 import ua.prom.roboticsdmc.mapper.CourseMapperStruct;
 import ua.prom.roboticsdmc.mapper.GroupMapperStruct;
 import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
+import ua.prom.roboticsdmc.repository.CourseRepository;
+import ua.prom.roboticsdmc.repository.GroupRepository;
+import ua.prom.roboticsdmc.repository.StudentRepository;
+import ua.prom.roboticsdmc.repository.UserRepository;
 
 @ActiveProfiles("test")
 @SpringBootTest(classes = {StudentServiceImpl.class})
@@ -41,16 +43,16 @@ import ua.prom.roboticsdmc.mapper.StudentMapperStruct;
 class StudentServiceImplTest {
 
     @MockBean
-    StudentDao studentDao;
+    StudentRepository studentRepository;
     
     @MockBean
-    UserDao userDao;
+    UserRepository userRepository;
     
     @MockBean
-    CourseDao courseDao;
+    CourseRepository courseRepository;
     
     @MockBean
-    GroupDao groupDao;
+    GroupRepository groupRepository;
     
     @MockBean
     StudentMapperStruct studentMapperStruct;
@@ -79,7 +81,7 @@ class StudentServiceImplTest {
         GroupDto groupDto3 = GroupDto.builder().withGroupId(3).withGroupName("VA-52").build();
         List<GroupDto> expectedGroupDto = new ArrayList<>(Arrays.asList(groupDto1, groupDto2, groupDto3));
 
-        when(groupDao.findGroupWithLessOrEqualsStudentQuantity(anyInt())).thenReturn(groups);
+        when(groupRepository.findGroupWithLessOrEqualsStudentQuantity(anyInt())).thenReturn(groups);
         when(groupMapperStruct.mapGroupToGroupDto(any(Group.class)))
         .thenReturn(groupDto1)
         .thenReturn(groupDto2)
@@ -90,7 +92,7 @@ class StudentServiceImplTest {
         assertNotNull(actualGroupDto);
         assertEquals(expectedGroupDto, actualGroupDto);
 
-        verify(groupDao).findGroupWithLessOrEqualsStudentQuantity(anyInt());
+        verify(groupRepository).findGroupWithLessOrEqualsStudentQuantity(anyInt());
     }
     
     @Test
@@ -98,6 +100,7 @@ class StudentServiceImplTest {
     void findAllStudentsRelatedToCourseWithGivenName_shouldReturnListOfStudents_whenStudentsAssignToCourse() {
 
         String courseName = "Biology";
+        Course mockCourse = mock(Course.class);
         
         Student student1 = Student.builder()
                 .withUserId(3)
@@ -131,7 +134,8 @@ class StudentServiceImplTest {
                 .build();
         List<StudentDto> expectedStudentDto = new ArrayList<>(Arrays.asList(studentDto1, studentDto2));
 
-        when(courseDao.findStudentsByCourseName(anyString())).thenReturn(students);
+        when(courseRepository.findCourseByCourseName(anyString())).thenReturn(Optional.of(mockCourse));
+        when(Optional.of(mockCourse).get().getStudents()).thenReturn(students);
         when(studentMapperStruct.mapStudentToStudentDto(any(Student.class)))
         .thenReturn(studentDto1)
         .thenReturn(studentDto2);
@@ -141,7 +145,7 @@ class StudentServiceImplTest {
         assertNotNull(actualStudentDto);
         assertEquals(expectedStudentDto, actualStudentDto);
 
-        verify(courseDao).findStudentsByCourseName(anyString());
+        verify(courseRepository).findCourseByCourseName(courseName);
     }
     
     @Test
@@ -149,45 +153,62 @@ class StudentServiceImplTest {
     void deleteUserByUser_Id_shouldDeleteUser_whenThereIsUserWithEnteredUserId() {
 
         int userId = 20;
-        studentServiceImpl.deleteUserByUser_Id(userId);
+        studentServiceImpl.deleteUserById(userId);
 
-        verify(userDao).deleteById(userId);
+        verify(userRepository).deleteById(userId);
     }
     
     @Test
     @DisplayName("addStudentToCourse method should add Student to Course when entered data are correct")
     void addStudentToCourse_shouldAddStudentToCourse_whenEnteredDataAreCorrect() {
 
-        int studentId = 10;
+        int userId = 10;
         int courseId = 5;
         
-        studentServiceImpl.addStudentToCourse(studentId, courseId);
+        Student student = Student.builder().withUserId(userId).build();
+        Optional <Student> studentOptional = Optional.of(student);
+        Course course = Course.builder().withCourseId(courseId).build();
+        Optional <Course> courseOptional = Optional.of(course);
+        
+        when(studentRepository.findById(anyInt())).thenReturn(studentOptional);
+        when(courseRepository.findById(anyInt())).thenReturn(courseOptional);
+        
+        studentServiceImpl.addStudentToCourse(userId, courseId);
 
-        verify(studentDao).addStudentToCourse(studentId, courseId);
+        verify(studentRepository).addStudentToCourse(student, course);
     }
     
     @Test
     @DisplayName("removeStudentFromOneOfTheirCourses method should remove Student from one of his Course when entered data are correct")
     void removeStudentFromOneOfTheirCourses_shouldRemoveStudentFromHisCourse_whenEnteredDataAreCorrect() {
 
-        int studentId = 10;
+        int userId = 10;
         int courseId = 5;
         
-        studentServiceImpl.removeStudentFromOneOfTheirCourses(studentId, courseId);
+        Student student = Student.builder().withUserId(userId).build();
+        Optional <Student> studentOptional = Optional.of(student);
+        Course course = Course.builder().withCourseId(courseId).build();
+        Optional <Course> courseOptional = Optional.of(course);
+        
+        when(studentRepository.findById(anyInt())).thenReturn(studentOptional);
+        when(courseRepository.findById(anyInt())).thenReturn(courseOptional);
+        
+        studentServiceImpl.removeStudentFromOneOfTheirCourses(userId, courseId);
 
-        verify(studentDao).removeStudentFromCourse(studentId, courseId);
+        verify(studentRepository).removeStudentFromCourse(student, course);
     }
     
     @Test
     @DisplayName("addStudentToGroup method should add Student toGroup when entered data are correct")
     void addStudentToGroup_shouldAddStudentToGroup_whenEnteredDataAreCorrect() {
 
-        int studentId = 20;
+        int userId  = 20;
         int groupId = 1;
+        Student student = Student.builder().withUserId(userId).withGroupId(groupId).build();
         
-        studentServiceImpl.addStudentToGroup(groupId, studentId);
+        studentServiceImpl.addStudentToGroup(userId, groupId);
 
-        verify(studentDao).addStudentToGroup(groupId, studentId);
+        verify(studentRepository).addStudentToGroup(student);
     }
     
     @Test
@@ -202,7 +223,7 @@ class StudentServiceImplTest {
         CourseDto courseDto2 = CourseDto.builder().withCourseId(2).withCourseName("Biology").build();
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
-        when(courseDao.findAll()).thenReturn(courses);
+        when(courseRepository.findAll()).thenReturn(courses);
         when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
         List<CourseDto> actualCourseDto = studentServiceImpl.findAllCources();
@@ -210,14 +231,15 @@ class StudentServiceImplTest {
         assertNotNull(actualCourseDto);
         assertEquals(expectedCourseDto, actualCourseDto);
 
-        verify(courseDao).findAll();
+        verify(courseRepository).findAll();
     }
     
     @Test
     @DisplayName("findAllStudentCoursesByStudentId method should return list of Student Courses")
     void findAllStudentCoursesByStudentId_shouldReturnListOfStudentCourses_whenThereAreSomeStudentCourses() {
 
-        int studentId = 5;
+        int userId = 5;
+        Student mockStudent = mock(Student.class);
         Course course1 = Course.builder().withCourseId(1).withCourseName("Math").build();
         Course course2 = Course.builder().withCourseId(2).withCourseName("Biology").build();
         Set<Course> courses = new HashSet<>(Arrays.asList(course1, course2));
@@ -226,14 +248,15 @@ class StudentServiceImplTest {
         CourseDto courseDto2 = CourseDto.builder().withCourseId(2).withCourseName("Biology").build();
         List<CourseDto> expectedCourseDto = new ArrayList<>(Arrays.asList(courseDto1, courseDto2));
 
-        when(studentDao.getAllStudentCoursesByStudentID(anyInt())).thenReturn(courses);
+        when(studentRepository.findById(anyInt())).thenReturn(Optional.of(mockStudent));
+        when(Optional.of(mockStudent).get().getCourses()).thenReturn(courses);
         when(courseMapperStruct.mapCourseToCourseDto(any(Course.class))).thenReturn(courseDto1).thenReturn(courseDto2);
 
-        List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentCoursesByStudentId(studentId);
+        List<CourseDto> actualCourseDto = studentServiceImpl.findAllStudentCoursesByStudentId(userId);
 
         assertNotNull(actualCourseDto);
         assertEquals(expectedCourseDto, actualCourseDto);
 
-        verify(studentDao).getAllStudentCoursesByStudentID(studentId);
+        verify(studentRepository).findById(userId);
     }
 }

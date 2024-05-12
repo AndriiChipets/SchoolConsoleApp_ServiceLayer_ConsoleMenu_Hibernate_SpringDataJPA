@@ -30,8 +30,8 @@ If you are interesting in ditails, you are able to see intermediate implementati
 # For Hibernate
 1. Added the Hibernate support to the project
 2. Enriched the model with JPA annotations Rewrited the DAO layer. Used Hibernate instead of Spring JDBC.
-3. Rewrited DAO to use EntityManager instead of JDBCTemplate
+3. Rewrote DAO to use EntityManager instead of JDBCTemplate
 4. Updated test code with @DataJpaTest
 
 # For Spring Data JPA
-Rewrited the DAO layer. Used Spring Data JPA instead of Hibernate.
+Rewrote the DAO layer. Used Spring Data JPA instead of Hibernate.

@@ -35,3 +35,10 @@ If you are interesting in ditails, you are able to see intermediate implementati
 
 # For Spring Data JPA
 Rewrote the DAO layer. Used Spring Data JPA instead of Hibernate.
+
+![image-2](https://github.com/AndriiChipets/SchoolConsoleApp_ServiceLayer_ConsoleMenu_Hibernate_SpringDataJPA/assets/137887124/155396f5-0b84-4092-acc2-ee9500b5faf7)
+![image-1](https://github.com/AndriiChipets/SchoolConsoleApp_ServiceLayer_ConsoleMenu_Hibernate_SpringDataJPA/assets/137887124/982bcaaf-2046-42fc-ac9b-f52e262f79ef)
+![image-5](https://github.com/AndriiChipets/SchoolConsoleApp_ServiceLayer_ConsoleMenu_Hibernate_SpringDataJPA/assets/137887124/15d30644-1eab-44b2-a2c3-db963c84d405)
+![image-4](https://github.com/AndriiChipets/SchoolConsoleApp_ServiceLayer_ConsoleMenu_Hibernate_SpringDataJPA/assets/137887124/9d1b7b2b-09b6-4001-9dc2-7d3f101ac456)
+![image-3](https://github.com/AndriiChipets/SchoolConsoleApp_ServiceLayer_ConsoleMenu_Hibernate_SpringDataJPA/assets/137887124/83cfc4ef-793c-47fb-848d-a80edbfa6d34)
+

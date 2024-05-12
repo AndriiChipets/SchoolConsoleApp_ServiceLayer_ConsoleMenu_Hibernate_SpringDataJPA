@@ -18,7 +18,7 @@ If you are interesting in ditails, you are able to see intermediate implementati
 4. Created the relation MANY-TO-MANY between the tables STUDENTS and COURSES. Randomly assign from 1 to 3 courses for each student
 
 # For Console menu
-1. Addes a proper logging to the existing code
+1. Added a proper logging to the existing code
 2. Created a console menu to utilize implemented functionality:
 - Find all the groups with less or equal student count
 - Find all the students related to the course with the given name
